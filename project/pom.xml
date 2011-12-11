@@ -3,13 +3,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.ac.uibk.paybar</groupId>
 	<artifactId>PayBar</artifactId>
+    <name>PayBar</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>commons</module>
-		<module>clearingHouse</module>
-		<module>fastcheck</module>
-		<module>mobile</module>
-		<module>pos</module>
+		<module>paybar-commons</module>
+		<module>paybar-clearingHouse</module>
+		<module>paybar-fastcheck</module>
+		<module>paybar-mobile</module>
+		<module>paybar-pos</module>
 	</modules>
 	<version>0.0.1.0-SNAPSHOT</version>
 	<inceptionYear>2011</inceptionYear>
@@ -20,7 +21,6 @@
 			<distribution>manual</distribution>
 		</license>
 	</licenses>
-	<name>PayBar</name>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
