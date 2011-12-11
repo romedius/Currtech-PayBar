@@ -8,7 +8,7 @@ package at.ac.uibk.paybar;
  * 
  * @author Michael Dejori
  */
-public class MainClass 
+public class MainClassCH 
 {
 	
 	public static void main(String[] args)

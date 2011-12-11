@@ -16,7 +16,7 @@
 
 		<dependency>
 			<groupId>at.ac.uibk.paybar</groupId>
-			<artifactId>PayBar-Commons</artifactId>
+			<artifactId>paybar-commons</artifactId>
 			<version>0.0.1.0-SNAPSHOT</version>
 		</dependency>
 
