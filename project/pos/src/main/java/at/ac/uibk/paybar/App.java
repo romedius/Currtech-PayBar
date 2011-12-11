@@ -2,7 +2,7 @@ package at.ac.uibk.paybar;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import org.apache.soap.*;
+
 
 /**
  * A very simple java swing application. 
