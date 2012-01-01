@@ -1,5 +1,5 @@
-jboss-javaee6-webapp-src
-========================
+clearinghouse
+=====================
 
 What is it?
 -----------
@@ -20,8 +20,7 @@ All you need to build this project is Java 6.0 (Java SDK 1.6) or better, Maven
 The application this project produces is designed to be run on a JBoss AS 7. 
  
 NOTE:
-This project retrieves artifacts from the JBoss Community Maven repository, a
-superset of the Maven central repository.
+This project some retrieves artifacts from the JBoss Community Maven repository.
 
 With the prerequisites out of the way, you're ready to build and deploy.
 
@@ -45,9 +44,9 @@ You can now deploy the artifact to JBoss AS by executing the following command:
 
     mvn jboss-as:deploy
 
-This will deploy `target/jboss-javaee6-webapp-src.war`.
+This will deploy `target/clearinghouse.ear`.
  
-The application will be running at the following URL <http://localhost:8080/jboss-javaee6-webapp-src/>.
+The application will be running at the following URL <http://localhost:8080/clearinghouse/>.
 
 To undeploy from JBoss AS, run this command:
 
