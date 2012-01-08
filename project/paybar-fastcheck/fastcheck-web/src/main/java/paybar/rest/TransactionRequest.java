@@ -1,4 +1,4 @@
-package org.jboss.as.quickstarts.kitchensink.rest;
+package paybar.rest;
 
 
 public class TransactionRequest {
