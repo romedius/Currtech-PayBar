@@ -18,3 +18,7 @@ http://www.jboss.org/tools/download/dev
 
 Demo Applications for JBOSS AS 7:
 http://download.jboss.org/jbossas/7.1/jboss-as-7.1.0.Beta1b/jboss-as-quickstarts-7.1.0.Beta1b-dist.zip
+
+Working Commandline for testing the current fastcheck method:
+
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d '{"po00", "amount":2e+3}' -v "http://localhost:8080/jboss-as-kitchensink/rest/transactions/tan/21"
