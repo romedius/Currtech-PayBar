@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Client Test</title>
+
+<script type="text/javascript">
+
+function send () {
+	var posid = document.getElementById("posid").value;
+	var amount = document.getElementById("amount").value;
+	var url = "localhost:8080/paybar-fastcheck/rest/transactions/tan/" + document.getElementById("tan").value;
+	alert(url);
+	var xmlhttp;
+	if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	} else {// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.onreadystatechange=function() {
+	  if (xmlhttp.readyState==4 && xmlhttp.status==200){
+		    document.getElementById("success").innerHTML = "Result: " + xmlhttp.responseText;
+	  } else {
+		  document.getElementById("success").innerHTML = 'Error: Status: ';
+      }
+	}
+	xmlhttp.open("POST","url",true);
+	alert("{\"posId\":\"" + posidmeineId + "\", \"amount\":\"" + amount + "\"}");
+	xmlhttp.send("{\"posId\":\"" + posidmeineId + "\", \"amount\":\"" + amount + "\"}");
+}
+</script>
+
+</head>
+<body>
+	Id:
+	<input id="posid" type="text" />
+	<br /> Amount:
+	<input id="amount" type="text">
+	<br /> Tan:
+	<input id="tan" type="text">
+	<br />
+	<a href="javascript:send()">Send</a>
+	<br />
+	<br />
+	<div id="success"></div>
+
+</body>
+</html>
