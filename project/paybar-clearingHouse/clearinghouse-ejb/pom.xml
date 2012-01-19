@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>clearinghouse-ejb</artifactId>
-	<version>1.0-SNAPSHOT</version>
+
 	<packaging>ejb</packaging>
 
 	<name>clearinghouse EJB module</name>
@@ -53,6 +53,17 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.jboss.spec.javax.jms</groupId>
+			<artifactId>jboss-jms-api_1.1_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jnp-client</artifactId>
+			<version>4.2.2.GA</version>
+		</dependency>
+
 
 		<!-- Test scope dependencies -->
 		<dependency>
@@ -70,6 +81,10 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>at.ac.uibk.paybar</groupId>
+			<artifactId>paybar-commons</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

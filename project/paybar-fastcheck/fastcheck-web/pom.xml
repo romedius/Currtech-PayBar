@@ -10,7 +10,6 @@
 	</parent>
 
 	<artifactId>fastcheck-web</artifactId>
-	<version>0.0.1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<name>fastcheck Web module</name>
@@ -18,13 +17,6 @@
 	<dependencies>
 
 		<!-- Dependency on the EJB module so we can use it's services if needed -->
-		<dependency>
-			<groupId>at.ac.uibk.paybar</groupId>
-			<artifactId>fastcheck-ejb</artifactId>
-			<type>ejb</type>
-			<scope>provided</scope>
-			<version>0.0.1.0-SNAPSHOT</version>
-		</dependency>
 
 		<!-- Import the JAX-RS API, we use provided scope as the API is included 
 			in JBoss AS 7 -->
@@ -93,6 +85,10 @@
       	<groupId>jboss</groupId>
       	<artifactId>jnp-client</artifactId>
       	<version>4.2.2.GA</version>
+      </dependency>
+      <dependency>
+      	<groupId>at.ac.uibk.paybar</groupId>
+      	<artifactId>paybar-commons</artifactId>
       </dependency>
 	</dependencies>
 
