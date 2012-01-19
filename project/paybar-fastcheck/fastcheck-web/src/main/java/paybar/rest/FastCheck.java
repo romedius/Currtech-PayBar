@@ -30,6 +30,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
+import at.ac.uibk.paybar.TransactionMessage;
+
+
 /**
  * FastCheck is responsible for authorizing a transaction. This includes account
  * and TAN-code checkup. If both are valid the FastCheck answers the client with
