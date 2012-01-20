@@ -1,16 +1,23 @@
 package paybar.model;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 public class DetailAccountData {
-	private String id;
+	
+	@Id
+	@GeneratedValue
+	private long id;
+	
 	private String locationhash;
 	private float credit;
 	private boolean active;
 	private String security;
 	
-	public String getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public String getLocationhash() {
