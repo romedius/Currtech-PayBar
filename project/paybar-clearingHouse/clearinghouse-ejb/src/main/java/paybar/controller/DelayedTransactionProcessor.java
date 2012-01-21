@@ -32,7 +32,6 @@ public class DelayedTransactionProcessor implements MessageListener {
 	public void onMessage(Message message) {
 		Connection connection = null;
 		try {
-			// it's a Tachyon Beam Message ;-)
 			ObjectMessage textMessage = (ObjectMessage) message;
 			at.ac.uibk.paybar.TransactionMessage transactionMessage = (at.ac.uibk.paybar.TransactionMessage) textMessage
 					.getObject();
@@ -75,7 +74,6 @@ public class DelayedTransactionProcessor implements MessageListener {
 			em.flush();
 			log.info("Successful persisted new transaction!");
 			
-			// TODO: move this to the clearing house project
 
 		} catch (Throwable e) {
 			e.printStackTrace();

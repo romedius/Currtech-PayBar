@@ -1,18 +1,33 @@
 package paybar.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
+@Entity
 public class PointOfSale {
 
-    String id;
+	@Id
+	@GeneratedValue
+    double id;
     
+	@NotNull
+	@NotEmpty
     String locationHash;
-    
+
+	@NotNull
+	@NotEmpty
     String name;
 
-    public String getId() {
+    public double getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(double id) {
         this.id = id;
     }
 

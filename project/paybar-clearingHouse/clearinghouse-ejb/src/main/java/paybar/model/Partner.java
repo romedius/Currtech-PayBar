@@ -1,25 +1,35 @@
 package paybar.model;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
+
+@Entity
 public class Partner {
 
-    String id;
+	@Id
+    long id;
     
+	@NotNull
     String locationHash;
     
+	@NotNull
     String adress;
     
+	@NotNull
     String billingInformation;
     
-    float credit;
+    double credit;
 
-    public String getId() {
-        return id;
-    }
+	public long getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public void setId(long id) {
+		this.id = id;
+	}
 
+    
     public String getLocationHash() {
         return locationHash;
     }
@@ -44,11 +54,11 @@ public class Partner {
         this.billingInformation = billingInformation;
     }
 
-    public float getCredit() {
+    public double getCredit() {
         return credit;
     }
 
-    public void setCredit(float credit) {
+    public void setCredit(double credit) {
         this.credit = credit;
     }
     
