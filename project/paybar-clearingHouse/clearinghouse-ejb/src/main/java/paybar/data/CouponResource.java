@@ -43,7 +43,7 @@ public class CouponResource {
 	
 	/**
 	 * isValidCoupon checks whether the couponCode is
-	 * valid and ca be used correctly.
+	 * valid and can be used correctly.
 	 * 
 	 * @param couponCode 
 	 * @return -1 code already used
