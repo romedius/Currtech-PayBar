@@ -13,6 +13,8 @@ import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
 import javax.persistence.EntityManager;
 
+import paybar.data.CouponResource;
+import paybar.data.TransactionResource;
 import paybar.model.Transaction;
 
 
@@ -21,13 +23,17 @@ import paybar.model.Transaction;
 		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/test"),
 		@ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
 public class DelayedTransactionProcessor implements MessageListener {
+	
+	@Inject
+	private TransactionResource tr;
+	
+	@Inject
+	private CouponResource cr;
 
 	// maybe this is sub-optimal...
 	private static final Logger log = Logger
 			.getLogger(DelayedTransactionProcessor.class.getName());
-	
-	@Inject
-	private EntityManager em;
+
 
 	public void onMessage(Message message) {
 		Connection connection = null;
@@ -65,15 +71,13 @@ public class DelayedTransactionProcessor implements MessageListener {
 			 */
 			// TODO: persist and log successful persistence
 			
-			Transaction transactionNew = new Transaction();
-			transactionNew.setAmount(transactionMessage.getAmount());
-			transactionNew.setLocationHash("blabla!");
-			transactionNew.setTransactionTime(transactionMessage.getTimestamp());
+			// check whether the coupon is valid
+			if (cr.isValidCoupon(transactionMessage.getTanCode()) == 1){
+				tr.createTransaction(transactionMessage.getAmount(), transactionMessage.getTanCode(), transactionMessage.getTimestamp());
+			} 
+			// TODO: else block in case not valid tanCode
 			
-			em.persist(transactionNew);
-			em.flush();
-			log.info("Successful persisted new transaction!");
-			
+
 
 		} catch (Throwable e) {
 			e.printStackTrace();
