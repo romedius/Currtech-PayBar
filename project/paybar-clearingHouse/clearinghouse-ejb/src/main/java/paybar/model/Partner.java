@@ -1,25 +1,79 @@
 package paybar.model;
 
+import java.io.Serializable;
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
-public class Partner {
+public class Partner implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
-    long id;
-    
+	@GeneratedValue
+	long id;
+
 	@NotNull
-    String locationHash;
-    
+	@NotEmpty
+	String locationHash;
+
 	@NotNull
-    String adress;
-    
+	@NotEmpty
+	String adress;
+
 	@NotNull
-    String billingInformation;
-    
-    double credit;
+	@NotEmpty
+	String billingInformation;
+
+	@NotNull
+	@NotEmpty
+	@Size(min = 1, max = 25)
+	private String userName;
+
+	@NotNull
+	@NotEmpty
+	@Size(min = 6, max = 25)
+	private String password;
+
+	/**
+	 * This is the list of PointsOfSale of a Partner.
+	 * */
+	@OneToMany
+	private List<PointOfSale> pointsOfSale;
+
+	public List<PointOfSale> getPointsOfSale() {
+		return pointsOfSale;
+	}
+
+	public void setPointsOfSale(List<PointOfSale> pointsOfSale) {
+		this.pointsOfSale = pointsOfSale;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	double credit;
 
 	public long getId() {
 		return id;
@@ -29,37 +83,36 @@ public class Partner {
 		this.id = id;
 	}
 
-    
-    public String getLocationHash() {
-        return locationHash;
-    }
+	public String getLocationHash() {
+		return locationHash;
+	}
 
-    public void setLocationHash(String locationHash) {
-        this.locationHash = locationHash;
-    }
+	public void setLocationHash(String locationHash) {
+		this.locationHash = locationHash;
+	}
 
-    public String getAdress() {
-        return adress;
-    }
+	public String getAdress() {
+		return adress;
+	}
 
-    public void setAdress(String adress) {
-        this.adress = adress;
-    }
+	public void setAdress(String adress) {
+		this.adress = adress;
+	}
 
-    public String getBillingInformation() {
-        return billingInformation;
-    }
+	public String getBillingInformation() {
+		return billingInformation;
+	}
 
-    public void setBillingInformation(String billingInformation) {
-        this.billingInformation = billingInformation;
-    }
+	public void setBillingInformation(String billingInformation) {
+		this.billingInformation = billingInformation;
+	}
 
-    public double getCredit() {
-        return credit;
-    }
+	public double getCredit() {
+		return credit;
+	}
 
-    public void setCredit(double credit) {
-        this.credit = credit;
-    }
-    
+	public void setCredit(double credit) {
+		this.credit = credit;
+	}
+
 }

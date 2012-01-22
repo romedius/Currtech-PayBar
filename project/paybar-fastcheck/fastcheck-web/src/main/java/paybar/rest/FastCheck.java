@@ -2,7 +2,6 @@ package paybar.rest;
 
 
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import javax.enterprise.context.RequestScoped;
@@ -13,20 +12,14 @@ import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
-import javax.jms.TextMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.persistence.metamodel.StaticMetamodel;
-import javax.sql.DataSource;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
@@ -181,7 +174,7 @@ public class FastCheck {
 		} else {
 			// TODO: use ExceptionMapper here or create more detailed response
 			// status code
-			throw new WebApplicationException(400);
+			throw new WebApplicationException(404);
 		}
 
 		return result;

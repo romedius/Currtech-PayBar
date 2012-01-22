@@ -1,50 +1,63 @@
 package paybar.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
-public class PointOfSale {
+public class PointOfSale implements Serializable {
+
+	public PointOfSale(String locationHash, String name) {
+		super();
+		this.locationHash = locationHash;
+		this.name = name;
+	}
+
+	public PointOfSale() {
+		super();
+	}
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue
-    double id;
-    
-	@NotNull
-	@NotEmpty
-    String locationHash;
+	long id;
 
 	@NotNull
 	@NotEmpty
-    String name;
+	String locationHash;
 
-    public double getId() {
-        return id;
-    }
+	@NotNull
+	@NotEmpty
+	String name;
 
-    public void setId(double id) {
-        this.id = id;
-    }
+	public long getId() {
+		return id;
+	}
 
-    public String getLocationHash() {
-        return locationHash;
-    }
+	public void setId(long id) {
+		this.id = id;
+	}
 
-    public void setLocationHash(String locationHash) {
-        this.locationHash = locationHash;
-    }
+	public String getLocationHash() {
+		return locationHash;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setLocationHash(String locationHash) {
+		this.locationHash = locationHash;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }    
-    
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 }

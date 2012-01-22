@@ -1,20 +1,19 @@
 package paybar.data;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.util.Date;
 import java.util.List;
+
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import paybar.model.Coupon;
 
 @Stateless
 public class CouponResource {
-	@Inject
+	
+	 @PersistenceContext(name = "primary")
 	private EntityManager em;
 	
 	/**
@@ -49,6 +48,7 @@ public class CouponResource {
 	 * @return -1 code already used
 	 * 			1 success
 	 */
+	@SuppressWarnings("unchecked")
 	public int isValidCoupon(String couponCode){
 		
 		Query query = em.createQuery( "Select a from Coupon a where a.couponCode like :param" );

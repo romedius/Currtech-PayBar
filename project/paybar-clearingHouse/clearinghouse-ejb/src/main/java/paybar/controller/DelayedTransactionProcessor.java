@@ -10,12 +10,9 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
-import javax.jms.TextMessage;
-import javax.persistence.EntityManager;
 
 import paybar.data.CouponResource;
 import paybar.data.TransactionResource;
-import paybar.model.Transaction;
 
 
 @MessageDriven(name = "DelayedTransactionProcessor", messageListenerInterface = MessageListener.class, activationConfig = {

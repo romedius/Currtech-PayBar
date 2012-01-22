@@ -16,6 +16,24 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Entity
 @XmlRootElement
 public class Coupon implements Serializable {
+	
+	public static final long VALID_TIME_OF_COUPON = 1209600000l;
+	
+	public Coupon(String locationHash, Date validFrom, Date validUntil,
+			Date usedDate, boolean banned, String couponCode) {
+		super();
+		this.locationHash = locationHash;
+		this.validFrom = validFrom;
+		this.validUntil = validUntil;
+		this.usedDate = usedDate;
+		this.banned = banned;
+		this.couponCode = couponCode;
+	}
+
+	public Coupon() {
+		
+	}
+
 	/**
 	 * 
 	 */
