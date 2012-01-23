@@ -40,6 +40,14 @@ public class CouponResource {
 		em.flush();
 	}
 	
+	
+	public void createNewCoupon(Coupon newCoupon)
+	{
+		em.persist(newCoupon);
+		em.flush();
+		
+	}
+	
 	/**
 	 * isValidCoupon checks whether the couponCode is
 	 * valid and can be used correctly.

@@ -19,6 +19,17 @@ public class Coupon implements Serializable {
 	
 	public static final long VALID_TIME_OF_COUPON = 1209600000l;
 	
+	/**
+	 * Minimal Number of coupons of a user before new ones will be generated.
+	 * */
+	public static final int MIN_NUM_OF_CUPONS = 5;
+
+	/**
+	 * Upon coupon generation, this is the number of coupons which will be generated.
+	 * */
+	public static final int GENERATE_NUM_OF_CUPONS = 5;
+	
+	
 	public Coupon(String locationHash, Date validFrom, Date validUntil,
 			Date usedDate, boolean banned, String couponCode) {
 		super();

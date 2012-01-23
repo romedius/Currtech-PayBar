@@ -1,7 +1,6 @@
 package paybar.rest;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -14,8 +13,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
 import paybar.data.PartnerResource;
-import paybar.model.Account;
-import paybar.model.Coupon;
 import paybar.model.DetailAccount;
 import paybar.model.PointOfSale;
 
@@ -77,16 +74,14 @@ public class SetupDatabase {
 				10);
 		for (int i = 0; i < 10; i++) {
 			DetailAccount da = new DetailAccount();
-			Account account = new Account();
-			account.setCoupons(null);
-			account.setCredit(i * 1000);
-			account.setSecurityKey("user-" + i); // TODO: dummy key for early
+			
+			
+			
+			da.setCredit(i * 1000);
+			da.setSecurityKey("user-" + i); // TODO: dummy key for early
 													// development for later
 													// stages
-
-			Set<Coupon> coupons = account.refreshCoupons();
 			
-			da.setAccount(account);
 			da.setAdress("Birkenweg " + i);
 			da.setFirstName("Hans der " + i + ".");
 			da.setPassword("hallo123");
@@ -95,6 +90,7 @@ public class SetupDatabase {
 			da.setUserName("user-" + i);
 			da.setActive(true);
 			da.setLocationHash("TIROL");
+			da.regenerateCoupons();
 
 			detailAccounts.add(da); // TODO: important persist this
 		}

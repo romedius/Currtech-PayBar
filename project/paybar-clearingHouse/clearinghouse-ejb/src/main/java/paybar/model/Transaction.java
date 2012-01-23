@@ -5,6 +5,8 @@ import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -13,6 +15,10 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @XmlRootElement
+@NamedQueries({
+	  @NamedQuery(name = "getTransactionsByUserName", query = "Select tr FROM Transactions tr, DetailAccount da WHERE da.userName = ?1 AND tr.coupon in (da.coupons)"),	  
+	  @NamedQuery(name = "getTransactionsByCompanyName", query = "Select tr FROM Transactions tr, Partner p WHERE p.userName = ?1 AND tr.pos in (p.pointsOfSale)")	  
+})
 public class Transaction implements Serializable {
 
 	private static final long serialVersionUID = 1L;

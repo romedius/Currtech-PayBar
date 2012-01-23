@@ -29,10 +29,14 @@ public class PartnerResource {
 		newPartner.setPassword(password);
 		newPartner.setPointsOfSale(pointsOfSale);
 		newPartner.setUserName(userName);
-		
+
 		em.persist(newPartner);
 		em.flush();
 	}
 
+	public void createNewpartner(Partner newPartner) {
+		em.persist(newPartner);
+		em.flush();
+	}
 
 }

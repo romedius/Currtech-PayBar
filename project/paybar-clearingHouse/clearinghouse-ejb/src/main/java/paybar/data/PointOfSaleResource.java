@@ -23,5 +23,8 @@ public class PointOfSaleResource {
 		em.flush();
 	}
 
-
+	public void createNewPointOfSale(PointOfSale newPointOfSale) {
+		em.persist(newPointOfSale);
+		em.flush();
+	}
 }
