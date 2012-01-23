@@ -13,9 +13,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import paybar.data.AccountResource;
 import paybar.data.DetailAccountResource;
-import paybar.model.Account;
 import paybar.model.DetailAccount;
 import paybar.util.Resources;
 
@@ -24,7 +22,7 @@ public class DetailedAccountTest {
    @Deployment
    public static Archive<?> createTestArchive() {
       return ShrinkWrap.create(WebArchive.class, "test.war")
-            .addClasses(DetailAccount.class, DetailAccountResource.class, Resources.class, Account.class, AccountResource.class)
+            .addClasses(DetailAccount.class, DetailAccountResource.class, Resources.class)
             .addAsResource("META-INF/persistence.xml", "META-INF/persistence.xml")
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
    }
@@ -33,15 +31,12 @@ public class DetailedAccountTest {
    @Inject
    DetailAccountResource detailAccountResource;
 
-   @Inject
-   AccountResource accountResource;
 
    @Inject
    Logger log;
 
    @Test
    public void testCreate() throws Exception {
-	   Account account = new Account();//...
 //	   
 //      Member newMember = memberRegistration.getNewMember();
 //      newMember.setName("Jane Doe");
