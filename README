@@ -26,3 +26,8 @@ curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X POS
 Configuration for HornetQ:
 Replace jboss-as-7.1.0.CR1b/standalone/configuration/standalone.xml with standalone.xml
 
+Configuration changes for Infinispan:
+https://docs.jboss.org/author/display/ISPN/Getting+Started+Guide+-+JBoss+AS+7
+
+Infinispan Lab:
+https://docs.jboss.org/author/display/ISPN/Lab+-+Getting+Started+with+Infinispan

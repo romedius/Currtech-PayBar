@@ -19,9 +19,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
-@NamedQueries({
-	  @NamedQuery(name = "getUserByName", query = "Select da FROM DetailAccount da WHERE da.userName = ?1")	  
-})
+@NamedQueries({ @NamedQuery(name = "getUserByName", query = "Select da FROM DetailAccount da WHERE da.userName = ?1") })
 public class DetailAccount implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -228,7 +226,11 @@ public class DetailAccount implements Serializable {
 		for (int i = currentCoupons.size(); i < Coupon.GENERATE_NUM_OF_CUPONS; i++) {
 			Coupon coupon = new Coupon(this.locationHash, validFrom,
 					validUntil, null, false, this.locationHash + this.id + "."
-							+ i + "." + r.nextInt());
+							+ i + "." + r.nextInt()); // TODO: code generation
+														// needs to be improved.
+														// Maybe calculate some
+														// time + index hash out
+														// of the user id
 			currentCoupons.add(coupon);
 		}
 	}

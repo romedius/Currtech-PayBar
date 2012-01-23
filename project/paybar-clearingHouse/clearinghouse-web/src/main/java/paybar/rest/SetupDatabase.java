@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.naming.NamingException;
+import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -17,11 +18,7 @@ import paybar.model.DetailAccount;
 import paybar.model.PointOfSale;
 
 /**
- * FastCheck is responsible for authorizing a transaction. This includes account
- * and TAN-code checkup. If both are valid the FastCheck answers the client with
- * success and queues a transaction + updates the distributed caches account
- * status immediately. The TAN-code should be invalidated as soon as possible
- * too.
+ * This can be used to fill the database with test data after startup.
  * 
  * @author wolfi
  * 
@@ -36,6 +33,9 @@ public class SetupDatabase {
 
 	@Inject
 	private PartnerResource pr;
+
+	@Inject
+	private EntityManager em;
 
 	/**
 	 * At least the put works. Should probably exchanged by post with a
@@ -74,14 +74,12 @@ public class SetupDatabase {
 				10);
 		for (int i = 0; i < 10; i++) {
 			DetailAccount da = new DetailAccount();
-			
-			
-			
+
 			da.setCredit(i * 1000);
 			da.setSecurityKey("user-" + i); // TODO: dummy key for early
-													// development for later
-													// stages
-			
+											// development for later
+											// stages
+
 			da.setAdress("Birkenweg " + i);
 			da.setFirstName("Hans der " + i + ".");
 			da.setPassword("hallo123");
@@ -92,10 +90,11 @@ public class SetupDatabase {
 			da.setLocationHash("TIROL");
 			da.regenerateCoupons();
 
-			detailAccounts.add(da); // TODO: important persist this
+			em.persist(da);
 		}
-		
-		
+
+		// TODO: reload the fastcheck cache after this initial setup or even
+		// better use the available methods for notifying it of the new objects
 
 		if (success) {
 			result = new String("SUCCESS");
@@ -106,11 +105,6 @@ public class SetupDatabase {
 		}
 
 		return result;
-	}
-
-	@GET
-	public String getAllTransactions() {
-		return "Much has happened since you've started to participate in history.";
 	}
 
 }
