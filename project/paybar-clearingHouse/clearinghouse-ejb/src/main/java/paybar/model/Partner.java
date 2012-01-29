@@ -43,6 +43,9 @@ public class Partner implements Serializable {
 	@Size(min = 6, max = 25)
 	private String password;
 
+	long credit;
+
+	
 	/**
 	 * This is the list of PointsOfSale of a Partner.
 	 * */
@@ -72,8 +75,6 @@ public class Partner implements Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-	double credit;
 
 	public long getId() {
 		return id;
@@ -107,11 +108,11 @@ public class Partner implements Serializable {
 		this.billingInformation = billingInformation;
 	}
 
-	public double getCredit() {
+	public long getCredit() {
 		return credit;
 	}
 
-	public void setCredit(double credit) {
+	public void setCredit(long credit) {
 		this.credit = credit;
 	}
 

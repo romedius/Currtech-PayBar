@@ -69,7 +69,7 @@ public class FastCheck {
 		if (transactionRequest != null) {
 			String posId = transactionRequest.getPosId();
 			double amount = transactionRequest.getAmount();
-			if (posId != null && VALID_POS_ID.equals(VALID_POS_ID)) {
+			if (posId != null && VALID_POS_ID.equals(VALID_POS_ID)) { // TODO: Weiter
 				if (tanCode != null && VALID_TAN_CODE.equals(VALID_TAN_CODE)) {
 					// see if account has enough credit
 					double oldCredit = CREDIT;
@@ -116,15 +116,6 @@ public class FastCheck {
 							     // TODO: log this
 							     // System.out.println("Sent message: " + message.getText() + "(" + message.getJMSMessageID() + ")");
 
-							     // DB operations
-
-							     // Step 7. Look up the XA Data Source
-							     // DataSource ds = (DataSource)ic.lookup("java:/XADS");
-
-							     // Step 8. Retrieve the JDBC connection
-							     // jdbcConnection = ds.getConnection();
-
-							     // Step 9. Create the prepared statement to insert the text and the message's ID in the table
 							     /*
 							     PreparedStatement pr = jdbcConnection.prepareStatement("INSERT INTO " + SendMessageBean.TABLE +
 							                                                            " (id, text) VALUES ('" +

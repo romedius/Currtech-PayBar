@@ -47,28 +47,9 @@ public class DelayedTransactionProcessor implements MessageListener {
 
 			log.info(text);
 
-			/*
-			 * connection = connectionFactory.createConnection();
-			 * 
-			 * System.out.println("connection created");
-			 * 
-			 * 
-			 * Session session = connection.createSession(false,
-			 * Session.AUTO_ACKNOWLEDGE);
-			 * 
-			 * System.out.println("session created");
-			 * 
-			 * MessageProducer producer = session.createProducer(replyQueue);
-			 * 
-			 * System.out.println("sending reply");
-			 * 
-			 * producer.send(session.createTextMessage("here is a reply"));
-			 * 
-			 * System.out.println("reply sent");
-			 */
 			// TODO: persist and log successful persistence
 			
-			// check whether the coupon is valid
+			// check whether the coupon is valid - TODO: Warning
 			if (cr.isValidCoupon(transactionMessage.getTanCode()) == 1){
 				tr.createTransaction(transactionMessage.getAmount(), transactionMessage.getTanCode(), transactionMessage.getTimestamp());
 			} 

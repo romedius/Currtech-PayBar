@@ -66,7 +66,7 @@ public class SetupDatabase {
 		}
 		// first create a company
 		pr.createNewpartner("TIROL", "6020", "bankingdata-KPREIS", "kpreis",
-				"blabla", pointsOfSale, 0d);
+				"blabla", pointsOfSale, 0l);
 
 		// create 10 customers with simple usernames and passwords
 		// fill up with some credit and issue them some coupons

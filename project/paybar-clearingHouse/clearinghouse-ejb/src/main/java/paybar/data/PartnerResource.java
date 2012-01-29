@@ -20,7 +20,7 @@ public class PartnerResource {
 	 */
 	public void createNewpartner(String locationHash, String adress,
 			String billingInformation, String userName, String password,
-			List<PointOfSale> pointsOfSale, double credit) {
+			List<PointOfSale> pointsOfSale, long credit) {
 		Partner newPartner = new Partner();
 		newPartner.setAdress(adress);
 		newPartner.setBillingInformation(billingInformation);
