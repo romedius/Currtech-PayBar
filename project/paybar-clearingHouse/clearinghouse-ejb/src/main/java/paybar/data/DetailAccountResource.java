@@ -19,7 +19,7 @@ public class DetailAccountResource {
 
 	@PersistenceContext(name = "primary")
 	private EntityManager em;
-	
+
 	@Inject
 	private CouponResource cr;
 
@@ -41,7 +41,11 @@ public class DetailAccountResource {
 		newDetailAccount.setLocationHash(locationhash);
 		newDetailAccount.setCredit(credit);
 		newDetailAccount.setSecurityKey(securityKey);
-		newDetailAccount.setOldCoupons(new ArrayList<Coupon>()); // There are no used coupons on the Startup
+		newDetailAccount.setOldCoupons(new ArrayList<Coupon>()); // There are no
+																	// used
+																	// coupons
+																	// on the
+																	// Startup
 		em.persist(newDetailAccount);
 		em.flush();
 	}
@@ -62,12 +66,12 @@ public class DetailAccountResource {
 			return null;
 		}
 	}
-	
+
 	public void updateDetailAccount(DetailAccount detailAccount) {
 		em.merge(detailAccount);
 		em.flush();
 	}
-	
+
 	/**
 	 * This method recreates a new set of coupon codes for this user and adds
 	 * the coupon codes to the old list of this account.
@@ -85,18 +89,21 @@ public class DetailAccountResource {
 		Date validUntil = new Date(currentTime + Coupon.VALID_TIME_OF_COUPON);
 		Random r = new Random(currentTime);
 		for (int i = currentCoupons.size(); i < Coupon.GENERATE_NUM_OF_CUPONS; i++) {
-			Coupon coupon = new Coupon(detailAccount.getLocationHash(), validFrom,
-					validUntil, null, false, detailAccount.getLocationHash() + detailAccount.getId() + "."
-							+ i + "." + r.nextInt()); // TODO: code generation
-														// needs to be improved.
-														// Maybe calculate some
-														// time + index hash out
-														// of the user id
+			Coupon coupon = new Coupon(detailAccount.getLocationHash(),
+					validFrom, validUntil, null, false,
+					detailAccount.getLocationHash() + detailAccount.getId()
+							+ "." + i + "." + r.nextInt()); // TODO: code
+															// generation
+															// needs to be
+															// improved.
+															// Maybe calculate
+															// some
+															// time + index hash
+															// out
+															// of the user id
 			currentCoupons.add(coupon);
 			cr.createNewCoupon(coupon);
-			
 		}
 	}
 
-	
 }

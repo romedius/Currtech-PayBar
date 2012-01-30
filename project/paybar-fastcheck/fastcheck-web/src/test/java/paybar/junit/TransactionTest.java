@@ -38,15 +38,13 @@ import com.meterware.httpunit.WebResponse;
 // from: http://zenoconsulting.wikidot.com/blog:1
 public class TransactionTest extends TestCase {
 
-	/** good XML input */
-	private static final String XML = "./src/test/resources/xml/file.xml";
-
 	/** URL */
 	private static final String URL = "http://localhost:8080/fastcheck/rest/transaction/test/123/1234/200/";
 
 	private static final String ERR_MSG = "Unexpected exception in test. Is Jetty Running at "
 			+ URL + " ? ->";
 
+	@SuppressWarnings("unused")
 	private PostMethodWebRequest req;
 	private WebConversation wc;
 

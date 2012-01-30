@@ -1,15 +1,12 @@
 package paybar.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
-import javax.inject.Inject;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -18,8 +15,6 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
-
-import paybar.data.CouponResource;
 
 @Entity
 @NamedQueries({ @NamedQuery(name = "getUserByName", query = "Select da FROM DetailAccount da WHERE da.userName = ?1") })
@@ -90,12 +85,14 @@ public class DetailAccount implements Serializable {
 	 * This is the list of coupons of a user.
 	 * */
 	@OneToMany
+	@JoinTable(name = "detailaccount_coupons")
 	private List<Coupon> coupons;
 
 	/**
 	 * This is the list of used or otherwise invalidated coupons of the user.
 	 */
 	@OneToMany
+	@JoinTable(name = "detailaccount_oldcoupons")
 	private List<Coupon> oldCoupons;
 
 	public String getAdress() {

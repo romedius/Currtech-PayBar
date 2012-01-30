@@ -6,11 +6,10 @@
 	<parent>
 		<groupId>at.ac.uibk.paybar</groupId>
 		<artifactId>paybar-clearinghouse</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>0.0.1.0-SNAPSHOT </version>
 	</parent>
 
 	<artifactId>clearinghouse-web</artifactId>
-	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<name>clearinghouse Web module</name>
@@ -23,7 +22,7 @@
 			<artifactId>clearinghouse-ejb</artifactId>
 			<type>ejb</type>
 			<scope>provided</scope>
-			<version>1.0-SNAPSHOT</version>
+			<version>0.0.1.0-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Import the JAX-RS API, we use provided scope as the API is included 

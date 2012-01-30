@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>at.ac.uibk.paybar</groupId>
 		<artifactId>paybar-clearinghouse</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>0.0.1.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>clearinghouse-ejb</artifactId>
