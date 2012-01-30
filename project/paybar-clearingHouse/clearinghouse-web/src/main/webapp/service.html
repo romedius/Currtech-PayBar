@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Service methods</title>
+
+<script type="text/javascript">
+
+function send () {
+	var url = "http://localhost:8080/clearinghouse/rest/setup/database"; 
+	var xmlhttp;
+	if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	} else {// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.onreadystatechange=function() {
+	  if (xmlhttp.readyState==4 && xmlhttp.status==200){
+		    document.getElementById("success").innerHTML = "Result: " + xmlhttp.responseText;
+	  } else {
+		  document.getElementById("success").innerHTML = 'Error: Status: ' + xmlhttp.responseText;
+      }
+	}
+	xmlhttp.open("PUT",url,true);
+	xmlhttp.setRequestHeader("Content-Type", "application/json");
+	xmlhttp.send();
+}
+</script>
+
+</head>
+<body>	
+	<a href="javascript:send()">Setup Database</a>
+	<div id="success"></div>
+</body>
+</html>

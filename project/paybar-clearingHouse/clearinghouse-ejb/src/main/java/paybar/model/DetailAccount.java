@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import javax.inject.Inject;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -17,6 +18,8 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
+
+import paybar.data.CouponResource;
 
 @Entity
 @NamedQueries({ @NamedQuery(name = "getUserByName", query = "Select da FROM DetailAccount da WHERE da.userName = ?1") })
@@ -207,32 +210,6 @@ public class DetailAccount implements Serializable {
 		this.securityKey = securityKey;
 	}
 
-	/**
-	 * This method recreates a new set of coupon codes for this user and adds
-	 * the coupon codes to the old list of this account.
-	 * 
-	 * @return
-	 */
-	public void regenerateCoupons() {
-		List<Coupon> currentCoupons = this.getCoupons();
-		if (currentCoupons == null) {
-			currentCoupons = new ArrayList<Coupon>();
-			this.setCoupons(currentCoupons);
-		}
-		long currentTime = System.currentTimeMillis();
-		Date validFrom = new Date(currentTime);
-		Date validUntil = new Date(currentTime + Coupon.VALID_TIME_OF_COUPON);
-		Random r = new Random(currentTime);
-		for (int i = currentCoupons.size(); i < Coupon.GENERATE_NUM_OF_CUPONS; i++) {
-			Coupon coupon = new Coupon(this.locationHash, validFrom,
-					validUntil, null, false, this.locationHash + this.id + "."
-							+ i + "." + r.nextInt()); // TODO: code generation
-														// needs to be improved.
-														// Maybe calculate some
-														// time + index hash out
-														// of the user id
-			currentCoupons.add(coupon);
-		}
-	}
+	
 
 }

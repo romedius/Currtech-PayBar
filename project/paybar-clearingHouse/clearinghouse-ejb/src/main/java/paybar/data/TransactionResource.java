@@ -7,7 +7,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import paybar.model.DetailAccount;
 import paybar.model.Transaction;
 
 @Stateless

@@ -1,26 +1,33 @@
 package paybar.rest;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Random;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
+import at.ac.uibk.paybar.helpers.RN;
+
+import paybar.data.DetailAccountResource;
 import paybar.data.PartnerResource;
+import paybar.data.PointOfSaleResource;
+import paybar.data.TransactionResource;
+import paybar.model.Coupon;
 import paybar.model.DetailAccount;
 import paybar.model.PointOfSale;
+import paybar.model.Transaction;
 
 /**
  * This can be used to fill the database with test data after startup.
  * 
- * @author wolfi
+ * @author alle ;-)
  * 
  */
 @Path("/setup")
@@ -35,7 +42,13 @@ public class SetupDatabase {
 	private PartnerResource pr;
 
 	@Inject
-	private EntityManager em;
+	private PointOfSaleResource posr;
+
+	@Inject
+	private DetailAccountResource dar;
+	
+	@Inject
+	private TransactionResource trr;
 
 	/**
 	 * At least the put works. Should probably exchanged by post with a
@@ -62,16 +75,15 @@ public class SetupDatabase {
 		ArrayList<PointOfSale> pointsOfSale = new ArrayList<PointOfSale>(10);
 		for (int i = 0; i < 10; i++) {
 			PointOfSale pos = new PointOfSale("TIROL", "FILIALE-" + (i + 1));
+			posr.createNewPointOfSale(pos);
 			pointsOfSale.add(pos);
 		}
 		// first create a company
 		pr.createNewpartner("TIROL", "6020", "bankingdata-KPREIS", "kpreis",
 				"blabla", pointsOfSale, 0l);
 
-		// create 10 customers with simple usernames and passwords
-		// fill up with some credit and issue them some coupons
-		ArrayList<DetailAccount> detailAccounts = new ArrayList<DetailAccount>(
-				10);
+		Random r = new Random();
+		Date now = new Date();
 		for (int i = 0; i < 10; i++) {
 			DetailAccount da = new DetailAccount();
 
@@ -81,16 +93,30 @@ public class SetupDatabase {
 											// stages
 
 			da.setAdress("Birkenweg " + i);
-			da.setFirstName("Hans der " + i + ".");
+			da.setFirstName("Hans der " + RN.roman(i+1));
 			da.setPassword("hallo123");
 			da.setPhoneNumber("0123456789");
 			da.setSureName(" von Mesopotamien");
 			da.setUserName("user-" + i);
 			da.setActive(true);
 			da.setLocationHash("TIROL");
-			da.regenerateCoupons();
+			da.setOldCoupons(new ArrayList<Coupon>());// Set an empty arraylist
+			dar.regenerateCoupons(da);
+			dar.createNewDetailAccount(da);
 
-			em.persist(da);
+			// Create a bunch of transactions for each user.
+			for(int j = 0; j < (3 + r.nextInt(5)); i++) {
+				Transaction tr = new Transaction();
+				tr.setAmount(r.nextLong()%2500);//Set a new Random value < 25€
+				Coupon c = da.getCoupons().get(0);
+				da.getCoupons().remove(c);
+				tr.setCoupon(c);
+				tr.setPos(pointsOfSale.get(j));
+				tr.setTransactionTime(now.getTime());
+				trr.createTransaction(tr);
+			}
+			dar.regenerateCoupons(da);
+			dar.updateDetailAccount(da);
 		}
 
 		// TODO: reload the fastcheck cache after this initial setup or even

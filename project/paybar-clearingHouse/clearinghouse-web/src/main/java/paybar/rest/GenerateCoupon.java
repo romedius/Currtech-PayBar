@@ -16,7 +16,7 @@ import paybar.data.CouponResource;
  * GenerateCoupon
  * This class is responsible for defining a Web Service.
  * The Web Service should generate Coupons and write them
- * in the persistence Data Scource
+ * in the persistence Data Source
  * @author Michael
  */
 @Path("/generateCoupon")
