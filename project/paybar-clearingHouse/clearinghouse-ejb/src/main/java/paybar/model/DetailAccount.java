@@ -3,13 +3,16 @@ package paybar.model;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -84,16 +87,14 @@ public class DetailAccount implements Serializable {
 	/**
 	 * This is the list of coupons of a user.
 	 * */
+	
 	@OneToMany
+	@OrderBy("id")
 	@JoinTable(name = "detailaccount_coupons")
+	@ElementCollection
 	private List<Coupon> coupons;
+	
 
-	/**
-	 * This is the list of used or otherwise invalidated coupons of the user.
-	 */
-	@OneToMany
-	@JoinTable(name = "detailaccount_oldcoupons")
-	private List<Coupon> oldCoupons;
 
 	public String getAdress() {
 		return adress;
@@ -173,14 +174,6 @@ public class DetailAccount implements Serializable {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
-	}
-
-	public List<Coupon> getOldCoupons() {
-		return oldCoupons;
-	}
-
-	public void setOldCoupons(List<Coupon> oldCoupons) {
-		this.oldCoupons = oldCoupons;
 	}
 
 	public List<Coupon> getCoupons() {

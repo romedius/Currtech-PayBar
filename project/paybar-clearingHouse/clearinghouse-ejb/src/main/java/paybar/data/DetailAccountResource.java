@@ -8,6 +8,7 @@ import java.util.Random;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -41,7 +42,7 @@ public class DetailAccountResource {
 		newDetailAccount.setLocationHash(locationhash);
 		newDetailAccount.setCredit(credit);
 		newDetailAccount.setSecurityKey(securityKey);
-		newDetailAccount.setOldCoupons(new ArrayList<Coupon>()); // There are no
+	//	newDetailAccount.setOldCoupons(new ArrayList<Coupon>()); // There are no
 																	// used
 																	// coupons
 																	// on the
@@ -55,16 +56,11 @@ public class DetailAccountResource {
 		em.flush();
 	}
 
-	public DetailAccount getUserByName(String name) {
-		try {
+	public DetailAccount getUserByName(String name) throws NoResultException,Exception {
 			Query query = em.createNamedQuery("getUserByName");
 			query.setParameter(1, name);
 			DetailAccount result = (DetailAccount) query.getSingleResult();
 			return result;
-		} catch (Exception e) {
-			System.out.println(e.toString());
-			return null;
-		}
 	}
 
 	public void updateDetailAccount(DetailAccount detailAccount) {
@@ -101,8 +97,8 @@ public class DetailAccountResource {
 															// time + index hash
 															// out
 															// of the user id
-			currentCoupons.add(coupon);
 			cr.createNewCoupon(coupon);
+			currentCoupons.add(coupon);
 		}
 	}
 

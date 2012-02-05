@@ -27,7 +27,7 @@ public class Coupon implements Serializable {
 	/**
 	 * Upon coupon generation, this is the number of coupons which will be generated.
 	 * */
-	public static final int GENERATE_NUM_OF_CUPONS = 5;
+	public static final int GENERATE_NUM_OF_CUPONS = 10;
 	
 	
 	public Coupon(String locationHash, Date validFrom, Date validUntil,

@@ -100,19 +100,26 @@ public class SetupDatabase {
 			da.setUserName("user-" + i);
 			da.setActive(true);
 			da.setLocationHash("TIROL");
-			da.setOldCoupons(new ArrayList<Coupon>());// Set an empty arraylist
+//			da.setOldCoupons(new ArrayList<Coupon>());// Set an empty arraylist
 			dar.regenerateCoupons(da);
 			dar.createNewDetailAccount(da);
 
 			// Create a bunch of transactions for each user.
-			for(int j = 0; j < (3 + r.nextInt(5)); i++) {
+			for(int j = 0; j < (3 + r.nextInt(5)); j++) {
 				Transaction tr = new Transaction();
 				tr.setAmount(r.nextLong()%2500);//Set a new Random value < 25€
-				Coupon c = da.getCoupons().get(0);
+				Coupon c = null;
+				try {
+					c = da.getCoupons().get(0);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				da.getCoupons().remove(c);
 				tr.setCoupon(c);
 				tr.setPos(pointsOfSale.get(j));
 				tr.setTransactionTime(now.getTime());
+				tr.setLocationHash(c.getLocationHash());
 				trr.createTransaction(tr);
 			}
 			dar.regenerateCoupons(da);
