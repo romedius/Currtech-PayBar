@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @XmlRootElement
 @NamedQueries({
-		@NamedQuery(name = "getTransactionsByUserName", query = "Select tr FROM Transaction tr, DetailAccount da WHERE da.userName = ?1 AND tr.coupon in (da.coupons)"),
+		@NamedQuery(name = "getTransactionsByUserName", query = "Select tr FROM  DetailAccount da, IN(da.coupons) c,Transaction tr WHERE da.userName = ?1 AND tr.coupon = c"),
 		@NamedQuery(name = "getTransactionsByCompanyName", query = "Select tr FROM Transaction tr, Partner p WHERE p.userName = ?1 AND tr.pos in (p.pointsOfSale)") })
 public class Transaction implements Serializable {
 

@@ -42,7 +42,7 @@ public class FastCheck {
 
 	public static final String VALID_POS_ID = "1060";
 	public static final String VALID_TAN_CODE = "21";
-	public static final double CREDIT = 100000d;
+	public static final long CREDIT = 100000;
 
 	/**
 	 * At least the put works. Should probably exchanged by post with a
@@ -68,12 +68,12 @@ public class FastCheck {
 		// method needs @Form parameter with @POST
 		if (transactionRequest != null) {
 			String posId = transactionRequest.getPosId();
-			double amount = transactionRequest.getAmount();
+			long amount = transactionRequest.getAmount();
 			if (posId != null && VALID_POS_ID.equals(VALID_POS_ID)) { // TODO: Weiter
 				if (tanCode != null && VALID_TAN_CODE.equals(VALID_TAN_CODE)) {
 					// see if account has enough credit
-					double oldCredit = CREDIT;
-					double newCredit = CREDIT - amount;
+					long oldCredit = CREDIT;
+					long newCredit = CREDIT - amount;
 					success = newCredit > 0.1d;
 
 					if (success) {

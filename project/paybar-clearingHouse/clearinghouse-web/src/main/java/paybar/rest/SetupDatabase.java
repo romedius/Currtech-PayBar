@@ -2,13 +2,14 @@ package paybar.rest;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.naming.NamingException;
-import javax.persistence.PersistenceException;
+import javax.persistence.NoResultException;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -17,8 +18,10 @@ import javax.ws.rs.core.MediaType;
 
 import paybar.data.DetailAccountResource;
 import paybar.data.PartnerResource;
+import paybar.data.PaybarResourceException;
 import paybar.data.PointOfSaleResource;
 import paybar.data.TransactionResource;
+import paybar.model.Coupon;
 import paybar.model.DetailAccount;
 import paybar.model.PointOfSale;
 import at.ac.uibk.paybar.helpers.RN;
@@ -67,7 +70,7 @@ public class SetupDatabase {
 	@PUT
 	@Path("/database")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String transaction() {
+	public String setup() {
 		String result = null;
 		boolean success = true;
 
@@ -75,7 +78,7 @@ public class SetupDatabase {
 		// generate a list of points of sale for the partner
 		// 10 should be sufficient
 		ArrayList<PointOfSale> pointsOfSale = new ArrayList<PointOfSale>(10);
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < Coupon.GENERATE_NUM_OF_CUPONS; i++) {
 			PointOfSale pos = new PointOfSale("TIROL", "FILIALE-" + (i + 1));
 			posr.createNewPointOfSale(pos);
 			pointsOfSale.add(pos);
@@ -102,30 +105,35 @@ public class SetupDatabase {
 			da.setUserName("user-" + i);
 			da.setActive(true);
 			da.setLocationHash("TIROL");
-			// da.setOldCoupons(new ArrayList<Coupon>());// Set an empty
-			// arraylist
-			dar.regenerateCoupons(da);
 			dar.createNewDetailAccount(da);
-
+			dar.regenerateCoupons(da.getUserName());
+			List<Coupon> coupons = new ArrayList<Coupon>();
+			try {
+				da = dar.getUserByName(da.getUserName(), false);
+				coupons = dar.getCouponListByUserName(da.getUserName());
+			} catch (NoResultException e) {
+				throw new WebApplicationException(e,500);
+			} catch (Exception e) {
+				throw new WebApplicationException(e,500);
+			}
 			// Create a bunch of transactions for each user.
-			int n = da.getCoupons().size() / 2
-					+ r.nextInt(da.getCoupons().size());
+			int n = coupons.size() / 2 + r.nextInt(coupons.size()/2);
 			for (int j = 0; j < n; j++) {
 				try {
-					trr.createTransactionWithCoupon(r.nextLong() % 2500, da
-							.getCoupons().get(0).getCouponCode(),
-							"Dummy transaction " + j, pointsOfSale.get(j)
-									.getName(), now.getTime(), null, null);
-				} catch (PersistenceException p) {
+					String posname = pointsOfSale.get(j).getName();
+					String ccode = coupons.get(0).getCouponCode();
+					trr.createTransactionWithCoupon(r.nextLong() % 2500,
+							ccode,
+							"Dummy transaction " + j, posname, now.getTime(),
+							null, null);
+					coupons.remove(0);
+				} catch (PaybarResourceException p) {
+					j = n;
 					log.info(p.getMessage());
-					break;
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
 
 			}
-			dar.regenerateCoupons(da);
-			dar.updateDetailAccount(da);
+			dar.regenerateCoupons(da.getUserName());
 		}
 
 		// TODO: reload the fastcheck cache after this initial setup or even
@@ -134,11 +142,8 @@ public class SetupDatabase {
 		if (success) {
 			result = new String("SUCCESS");
 		} else {
-			// TODO: use ExceptionMapper here or create more detailed response
-			// status code
 			throw new WebApplicationException(404);
 		}
-
 		return result;
 	}
 

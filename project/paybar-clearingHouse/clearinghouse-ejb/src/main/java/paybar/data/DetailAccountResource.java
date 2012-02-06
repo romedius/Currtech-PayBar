@@ -56,13 +56,24 @@ public class DetailAccountResource {
 		em.flush();
 	}
 
-	public DetailAccount getUserByName(String name) throws NoResultException,Exception {
+	public DetailAccount getUserByName(String name, boolean eager) throws NoResultException,Exception {
 			Query query = em.createNamedQuery("getUserByName");
 			query.setParameter(1, name);
 			DetailAccount result = (DetailAccount) query.getSingleResult();
+			if (eager) {
+				result.getCoupons().size();
+			}
 			return result;
+			
 	}
 
+	public List<Coupon> getCouponListByUserName(String name) throws NoResultException,Exception {
+		List<Coupon> coupons = new ArrayList<Coupon>();
+		DetailAccount da = getUserByName(name,false);
+		coupons.addAll(da.getCoupons());
+		return coupons;
+	}
+	
 	public void updateDetailAccount(DetailAccount detailAccount) {
 		em.merge(detailAccount);
 		em.flush();
@@ -74,20 +85,23 @@ public class DetailAccountResource {
 	 * 
 	 * @return
 	 */
-	public void regenerateCoupons(DetailAccount detailAccount) {
-		List<Coupon> currentCoupons = detailAccount.getCoupons();
+	public void regenerateCoupons(String name) {
+		Query query = em.createNamedQuery("getUserByName");
+		query.setParameter(1, name);
+		DetailAccount result = (DetailAccount) query.getSingleResult();
+		List<Coupon> currentCoupons = result.getCoupons();
 		if (currentCoupons == null) {
 			currentCoupons = new ArrayList<Coupon>();
-			detailAccount.setCoupons(currentCoupons);
+			result.setCoupons(currentCoupons);
 		}
 		long currentTime = System.currentTimeMillis();
 		Date validFrom = new Date(currentTime);
 		Date validUntil = new Date(currentTime + Coupon.VALID_TIME_OF_COUPON);
 		Random r = new Random(currentTime);
 		for (int i = currentCoupons.size(); i < Coupon.GENERATE_NUM_OF_CUPONS; i++) {
-			Coupon coupon = new Coupon(detailAccount.getLocationHash(),
+			Coupon coupon = new Coupon(result.getLocationHash(),
 					validFrom, validUntil, null, false,
-					detailAccount.getLocationHash() + detailAccount.getId()
+					result.getLocationHash() + result.getId()
 							+ "." + i + "." + r.nextInt()); // TODO: code
 															// generation
 															// needs to be
@@ -100,6 +114,9 @@ public class DetailAccountResource {
 			cr.createNewCoupon(coupon);
 			currentCoupons.add(coupon);
 		}
+		em.merge(result);
+		em.flush();
+		
 	}
 
 }
