@@ -4,7 +4,7 @@ package paybar.rest;
 public class TransactionRequest {
 	
 	private String posId;
-	private double amount;
+	private long amount;
 	
 	public String getPosId() {
 		return posId;
@@ -12,10 +12,10 @@ public class TransactionRequest {
 	public void setPosId(String posId) {
 		this.posId = posId;
 	}
-	public double getAmount() {
+	public long getAmount() {
 		return amount;
 	}
-	public void setAmount(double amount) {
+	public void setAmount(long amount) {
 		this.amount = amount;
 	}
 	
