@@ -46,17 +46,9 @@ public class DelayedTransactionProcessor implements MessageListener {
 					+ transactionMessage.getTimestamp();
 
 			log.info(text);
-
-			// TODO: persist and log successful persistence
-			
-			// check whether the coupon is valid - TODO: Warning
-			if (cr.isValidCoupon(transactionMessage.getTanCode()) == 1){
-				tr.createTransaction(transactionMessage.getAmount(), transactionMessage.getTanCode(), transactionMessage.getTimestamp());
-			} 
-			// TODO: else block in case not valid tanCode
-			
-
-
+			if (cr.isValidCoupon(transactionMessage.getTanCode())){
+				tr.createTransactionWithCoupon(transactionMessage.getAmount(), transactionMessage.getTanCode(), text, transactionMessage.getPosId(), transactionMessage.getTimestamp(),transactionMessage.getPreTransactionCredit(), transactionMessage.getPastTransactionCredit());
+			}  
 		} catch (Throwable e) {
 			e.printStackTrace();
 		} finally {

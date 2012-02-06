@@ -8,17 +8,13 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @XmlRootElement
 @NamedQueries({
-	  @NamedQuery(name = "getTransactionsByUserName", query = "Select tr FROM Transaction tr, DetailAccount da WHERE da.userName = ?1 AND tr.coupon in (da.coupons)"),	  
-	  @NamedQuery(name = "getTransactionsByCompanyName", query = "Select tr FROM Transaction tr, Partner p WHERE p.userName = ?1 AND tr.pos in (p.pointsOfSale)")	  
-})
+		@NamedQuery(name = "getTransactionsByUserName", query = "Select tr FROM Transaction tr, DetailAccount da WHERE da.userName = ?1 AND tr.coupon in (da.coupons)"),
+		@NamedQuery(name = "getTransactionsByCompanyName", query = "Select tr FROM Transaction tr, Partner p WHERE p.userName = ?1 AND tr.pos in (p.pointsOfSale)") })
 public class Transaction implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -29,10 +25,6 @@ public class Transaction implements Serializable {
 
 	double amount;
 
-	@NotNull
-	@NotEmpty
-	String locationHash;
-
 	long transactionTime;
 
 	@OneToOne
@@ -40,6 +32,17 @@ public class Transaction implements Serializable {
 
 	@OneToOne
 	private PointOfSale pos;
+
+	@OneToOne
+	private DetailAccount detailAccount;
+
+	public DetailAccount getDetailAccount() {
+		return detailAccount;
+	}
+
+	public void setDetailAccount(DetailAccount detailAccount) {
+		this.detailAccount = detailAccount;
+	}
 
 	public Coupon getCoupon() {
 		return coupon;
@@ -65,10 +68,6 @@ public class Transaction implements Serializable {
 		return id;
 	}
 
-	public String getLocationHash() {
-		return locationHash;
-	}
-
 	public long getTransactionTime() {
 		return transactionTime;
 	}
@@ -79,10 +78,6 @@ public class Transaction implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public void setLocationHash(String locationHash) {
-		this.locationHash = locationHash;
 	}
 
 	public void setTransactionTime(long transactionTime) {

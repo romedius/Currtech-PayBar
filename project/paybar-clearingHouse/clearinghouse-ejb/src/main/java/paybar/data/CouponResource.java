@@ -57,7 +57,7 @@ public class CouponResource {
 	 * 			1 success
 	 */
 	@SuppressWarnings("unchecked")
-	public int isValidCoupon(String couponCode){
+	public boolean isValidCoupon(String couponCode){
 		
 		Query query = em.createQuery( "Select a from Coupon a where a.couponCode like :param" );
 		query.setParameter( "param", couponCode );
@@ -66,10 +66,10 @@ public class CouponResource {
 			Coupon c = list.get(0);
 			System.out.println(c.toString());
 			if (!c.isBanned()){
-				return 1;
+				return true;
 			}
 		}
 		
-		return -1;
+		return false;
 	}
 }

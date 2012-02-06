@@ -3,26 +3,25 @@ package paybar.rest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.naming.NamingException;
+import javax.persistence.PersistenceException;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
-import at.ac.uibk.paybar.helpers.RN;
-
 import paybar.data.DetailAccountResource;
 import paybar.data.PartnerResource;
 import paybar.data.PointOfSaleResource;
 import paybar.data.TransactionResource;
-import paybar.model.Coupon;
 import paybar.model.DetailAccount;
 import paybar.model.PointOfSale;
-import paybar.model.Transaction;
+import at.ac.uibk.paybar.helpers.RN;
 
 /**
  * This can be used to fill the database with test data after startup.
@@ -39,6 +38,9 @@ public class SetupDatabase {
 	public static final double CREDIT = 100000d;
 
 	@Inject
+	Logger log;
+
+	@Inject
 	private PartnerResource pr;
 
 	@Inject
@@ -46,7 +48,7 @@ public class SetupDatabase {
 
 	@Inject
 	private DetailAccountResource dar;
-	
+
 	@Inject
 	private TransactionResource trr;
 
@@ -93,34 +95,34 @@ public class SetupDatabase {
 											// stages
 
 			da.setAdress("Birkenweg " + i);
-			da.setFirstName("Hans der " + RN.roman(i+1));
+			da.setFirstName("Hans der " + RN.roman(i + 1));
 			da.setPassword("hallo123");
 			da.setPhoneNumber("0123456789");
 			da.setSureName(" von Mesopotamien");
 			da.setUserName("user-" + i);
 			da.setActive(true);
 			da.setLocationHash("TIROL");
-//			da.setOldCoupons(new ArrayList<Coupon>());// Set an empty arraylist
+			// da.setOldCoupons(new ArrayList<Coupon>());// Set an empty
+			// arraylist
 			dar.regenerateCoupons(da);
 			dar.createNewDetailAccount(da);
 
 			// Create a bunch of transactions for each user.
-			for(int j = 0; j < (3 + r.nextInt(5)); j++) {
-				Transaction tr = new Transaction();
-				tr.setAmount(r.nextLong()%2500);//Set a new Random value < 25€
-				Coupon c = null;
+			int n = da.getCoupons().size() / 2
+					+ r.nextInt(da.getCoupons().size());
+			for (int j = 0; j < n; j++) {
 				try {
-					c = da.getCoupons().get(0);
+					trr.createTransactionWithCoupon(r.nextLong() % 2500, da
+							.getCoupons().get(0).getCouponCode(),
+							"Dummy transaction " + j, pointsOfSale.get(j)
+									.getName(), now.getTime(), null, null);
+				} catch (PersistenceException p) {
+					log.info(p.getMessage());
+					break;
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				da.getCoupons().remove(c);
-				tr.setCoupon(c);
-				tr.setPos(pointsOfSale.get(j));
-				tr.setTransactionTime(now.getTime());
-				tr.setLocationHash(c.getLocationHash());
-				trr.createTransaction(tr);
+
 			}
 			dar.regenerateCoupons(da);
 			dar.updateDetailAccount(da);

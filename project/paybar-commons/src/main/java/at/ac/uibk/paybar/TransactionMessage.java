@@ -8,21 +8,21 @@ public class TransactionMessage implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private double amount;
+	private long amount;
 	private String posId;
 	private String tanCode;
 	private long timestamp;
 
 	// additional verificaton information
-	private double preTransactionCredit;
-	private double pastTransactionCredit;
+	private long preTransactionCredit;
+	private long pastTransactionCredit;
 
 	public TransactionMessage() {
 		
 	}
 	
-	public TransactionMessage(String tanCode, String posId, double amount,
-			double oldCredit, double newCredit, long timestamp) {
+	public TransactionMessage(String tanCode, String posId, long amount,
+			long oldCredit, long newCredit, long timestamp) {
 		this.tanCode = tanCode;
 		this.posId = posId;
 		this.amount = amount;
@@ -31,11 +31,11 @@ public class TransactionMessage implements Serializable {
 		this.pastTransactionCredit = newCredit;
 	}
 
-	public double getAmount() {
+	public long getAmount() {
 		return amount;
 	}
 
-	public double getPastTransactionCredit() {
+	public long getPastTransactionCredit() {
 		return pastTransactionCredit;
 	}
 
@@ -43,7 +43,7 @@ public class TransactionMessage implements Serializable {
 		return posId;
 	}
 
-	public double getPreTransactionCredit() {
+	public long getPreTransactionCredit() {
 		return preTransactionCredit;
 	}
 
@@ -55,11 +55,11 @@ public class TransactionMessage implements Serializable {
 		return timestamp;
 	}
 
-	public void setAmount(double amount) {
+	public void setAmount(long amount) {
 		this.amount = amount;
 	}
 
-	public void setPastTransactionCredit(double pastTransactionCredit) {
+	public void setPastTransactionCredit(long pastTransactionCredit) {
 		this.pastTransactionCredit = pastTransactionCredit;
 	}
 
@@ -67,7 +67,7 @@ public class TransactionMessage implements Serializable {
 		this.posId = posId;
 	}
 
-	public void setPreTransactionCredit(double preTransactionCredit) {
+	public void setPreTransactionCredit(long preTransactionCredit) {
 		this.preTransactionCredit = preTransactionCredit;
 	}
 
