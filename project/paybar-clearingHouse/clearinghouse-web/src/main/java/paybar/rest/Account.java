@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -34,17 +34,19 @@ public class Account {
 	@Inject
 	private TransactionResource trr;
 
-	@PUT
+	@POST
 	@Path("/create")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public ReturnMessage createAccount(DetailAccount da) {
+		System.out.println("create AAACOUNT");
 		dar.createNewDetailAccount(da);
 		ReturnMessage rm = new ReturnMessage(ReturnMessageEnum.SUCCESS,
 				ReturnMessageEnum.SUCCESS.toString());
 		return rm;
 	}
-
+	
+	
 	@GET
 	@Path("/get/{name}")
 	@Consumes(MediaType.APPLICATION_JSON)

@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Register</title>
+
+<!-- jquery main javascript file -->
+<script src="javascript/jquery-1.7.1.js"></script>
+
+<!-- form Validation -->
+<script type="text/javascript" src="javascript/jquery.validate.js"></script>
+
+<!-- register specific javascript -->
+<script src="javascript/jquery.register.js"></script>
+
+<!-- main css -->
+<link rel="stylesheet" href="css/main.css" type="text/css" />
+</head>
+<body>
+	<div class="step">
+		<h3>Create account:</h3>
+		<form id="Registerform">
+			<div style="padding: 20px;">
+				<table style="width: 100%;">
+					<tr>
+						<td>First name:</td>
+						<td><input id="firstname" name="firstname" type="text"/></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Last name:</td>
+						<td><input id="lastname" name="lastname" type="text"
+							class="required" /></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Street:</td>
+						<td><input id="street" name="street" type="text"
+							class="required" /></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Postcode:</td>
+						<td><input id="postcode" name="postcode" type="text"
+							class="required number" /></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>City:</td>
+						<td><input id="city" name="city" type="text" class="required" /></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>User name:</td>
+						<td><input id="username" name="username" type="text"
+							class="required" /></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Password:</td>
+						<td><input id="password1" name="password1" type="password"
+							class="required" /></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Repeat Password:</td>
+						<td><input id="password2" name="password2" type="password"
+							class="required" /></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
+						<td><button style="width: 100px;" type="submit"
+								class="submit" id="registerSubmit">Register</button></td>
+					</tr>
+				</table>
+			</div>
+		</form>
+	</div>
+</body>
+</html>

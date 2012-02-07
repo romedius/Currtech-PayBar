@@ -1,0 +1,19 @@
+.step {
+	padding: 10px 10px 10px 10px;
+	border: 1px solid #E0EBF2;
+	width: 800px;
+	margin: auto;
+}
+
+label.error {
+	float: none;
+	color: red;
+	padding-left: .5em;
+	vertical-align: top;
+}
+
+em {
+	font-weight: bold;
+	padding-right: 1em;
+	vertical-align: top;
+}
