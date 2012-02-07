@@ -1,5 +1,6 @@
 package paybar.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -17,9 +18,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import paybar.data.DetailAccountResource;
+import paybar.data.ModelToWebserviceTransformer;
 import paybar.data.TransactionResource;
 import paybar.model.DetailAccount;
 import paybar.model.Transaction;
+import paybar.wsmodel.WsTransaction;
 
 @Path("/account")
 @RequestScoped
@@ -33,13 +36,16 @@ public class Account {
 
 	@Inject
 	private TransactionResource trr;
+	
+	@Inject
+	private ModelToWebserviceTransformer mtwt;
 
 	@POST
 	@Path("/create")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public ReturnMessage createAccount(DetailAccount da) {
-		System.out.println("create AAACOUNT");
+		log.info("create ACOUNT");
 		dar.createNewDetailAccount(da);
 		ReturnMessage rm = new ReturnMessage(ReturnMessageEnum.SUCCESS,
 				ReturnMessageEnum.SUCCESS.toString());
@@ -67,10 +73,31 @@ public class Account {
 	@Path("/getTransactions/{name}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Transaction> getTransactionsByUsername(
+	public List<WsTransaction> getTransactionsByUsername(
 			@PathParam("name") String userName) {
 		try {
-			return trr.getTransactionsByUsername(userName);
+			List<WsTransaction> transactions = new ArrayList<WsTransaction>();
+			for (Transaction t : trr.getTransactionsByUsername(userName)) {
+				transactions.add(mtwt.transactionToWsTransaction(t));
+			}
+			return transactions;
+		} catch (NoResultException e) {
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
+		} catch (Exception e) {
+			throw new WebApplicationException(e,
+					Response.Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+
+	@GET
+	@Path("/getTransactioncnt/{name}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public int getTransactionCountByUsername(
+			@PathParam("name") String userName) {
+		try {
+			return trr.getTransactionsByUsername(userName).size();
 		} catch (NoResultException e) {
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		} catch (Exception e) {

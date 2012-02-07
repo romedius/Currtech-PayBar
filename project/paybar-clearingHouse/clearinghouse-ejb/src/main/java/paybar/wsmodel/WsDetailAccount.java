@@ -1,104 +1,63 @@
-package paybar.model;
+package paybar.wsmodel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinTable;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import paybar.model.Coupon;
+import paybar.model.DetailAccount;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
-@Entity
-@Table(
-		uniqueConstraints=@UniqueConstraint(columnNames = {"userName"})
-)
-@NamedQueries({ @NamedQuery(name = "getUserByName", query = "Select da FROM DetailAccount da WHERE da.userName = ?1") })
-public class DetailAccount implements Serializable {
+public class WsDetailAccount implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue
 	private long id;
 
-	/**
-	 * Boolean Value to block a user. Blocked useres will not be loaded into the
-	 * fastcheck-infinispan instances.
-	 * */
 	private boolean active;
 
 	private String adress;
 
-	@NotNull
-	@NotEmpty
-	@Size(min = 1, max = 25)
-	@Pattern(regexp = "[A-Za-z ]*", message = "must contain only letters and spaces")
 	private String firstName;
 
-	@NotNull
-	@NotEmpty
-	@Size(min = 1, max = 25)
-	@Pattern(regexp = "[A-Za-z ]*", message = "must contain only letters and spaces")
 	private String sureName;
 
-	@NotNull
-	@NotEmpty
-	@Size(min = 6, max = 25)
 	private String password;
 
 	private String PhoneNumber;
 
-	@NotNull
-	@NotEmpty
-	@Size(min = 1, max = 25)
 	private String userName;
 
-	/**
-	 * This Value is used for the Infinispan cache to Attach an account to a
-	 * certain infinispan Group
-	 * */
-	@NotNull
-	@NotEmpty
 	private String locationHash;
 
 	private String moveToLocationHash;
 
-	/**
-	 * Credit of an user in cents.
-	 * */
 	private long credit;
 
-	/**
-	 * This Value is the Security Key used by the mobile Apps to identify
-	 * themselves towards the Server to avoid a re-login.
-	 * */
-	@NotNull
-	@NotEmpty
 	private String securityKey;
 
-	/**
-	 * This is the list of coupons of a user.
-	 * */
-	
-	@OneToMany
-	@OrderBy("id")
-	@JoinTable(name = "detailaccount_coupons")
-	@ElementCollection
-	private List<Coupon> coupons;
-	
+	private List<Long> couponsId;
 
+	public WsDetailAccount() {
+	}
+
+	public WsDetailAccount(DetailAccount da) {
+		this.active = da.isActive();
+		this.adress= da.getAdress();
+		this.couponsId= new ArrayList<Long>();
+		for (Coupon c : da.getCoupons()) {
+			couponsId.add(c.getId());
+		}
+		this.credit= da.getCredit();
+		this.firstName= da.getFirstName();
+		this.id= da.getId();
+		this.locationHash= da.getLocationHash();
+		this.moveToLocationHash= da.getMoveToLocationHash();
+		this.password= null;// The password is not given back in this way for Security reasons
+		this.PhoneNumber= da.getPhoneNumber();
+		this.securityKey= null;// The security key is not given back in this way for Security reasons
+		this.sureName= da.getSureName();
+		this.userName= da.getUserName();
+	}
 
 	public String getAdress() {
 		return adress;
@@ -180,12 +139,12 @@ public class DetailAccount implements Serializable {
 		this.userName = userName;
 	}
 
-	public List<Coupon> getCoupons() {
-		return coupons;
+	public List<Long> getCoupons() {
+		return couponsId;
 	}
 
-	public void setCoupons(List<Coupon> coupons) {
-		this.coupons = coupons;
+	public void setCoupons(List<Long> couponsId) {
+		this.couponsId = couponsId;
 	}
 
 	public long getCredit() {
@@ -203,7 +162,5 @@ public class DetailAccount implements Serializable {
 	public void setSecurityKey(String securityKey) {
 		this.securityKey = securityKey;
 	}
-
-	
 
 }

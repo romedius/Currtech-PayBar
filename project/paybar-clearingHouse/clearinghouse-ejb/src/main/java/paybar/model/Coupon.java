@@ -6,6 +6,8 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -15,6 +17,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @XmlRootElement
+@NamedQueries({
+	@NamedQuery(name = "getCouponsByUserName", query = "Select c FROM  DetailAccount da, IN (da.coupons) c WHERE da.userName = ?1 ")
+})
 public class Coupon implements Serializable {
 	
 	public static final long VALID_TIME_OF_COUPON = 1209600000l;
