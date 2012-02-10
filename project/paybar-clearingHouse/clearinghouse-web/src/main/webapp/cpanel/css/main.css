@@ -1,0 +1,137 @@
+@CHARSET "ISO-8859-1";
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    padding-bottom: 30px;
+    font: 13px "Trebuchet MS", Arial, Helvetica, sans-serif;
+    color: #444444;
+    background: #FFFFFF;
+    /* background: #418AB5; */
+}
+
+p {
+    padding: 10px 0;
+    line-height: 1.8em;
+    text-align: justify;
+}
+
+#header {
+    position: relative;
+    width: 900px;
+    height: 160px;
+    margin: 0 auto;
+    background: #26639C url('../images/header.png') no-repeat;
+}
+
+#main {
+    width: 100%;
+    padding: 12px 0;
+    background: #FFFFFF;
+}
+
+#main2 {
+	min-height: 400px;
+    width: 850px;
+    margin: 0 auto;
+    padding: 25px 25px 0 25px;
+    border: 1px solid #E0EBF2;
+}
+
+
+#sidebar {
+    float: left;
+    width: 220px;
+    padding-bottom: 20px;
+}
+
+#sidebar ul {
+    list-style: none;
+    padding: 15px 0 24px 0;
+    background: url('../images/box.jpg') no-repeat top;
+}
+
+#sidebar ul li {
+    padding: 3px 10px 3px 20px;
+    line-height: 1.8em;
+    border-bottom: 1px solid #E0EBF2;
+}
+
+#sidebar ul li a {
+    padding: 0;
+}
+
+#sidebar h2 {
+    padding-left: 20px;
+    margin-bottom: 3px;
+    font-size: 15px;
+    font-weight: normal;
+    line-height: 38px;
+    color: #FFFFFF;
+    background: #3476A7;
+}
+
+#sidebar .box {
+    padding: 15px 20px 20px 20px;
+    background: url('../images/box.jpg') no-repeat top;
+}
+
+#content {
+    float: right;
+    width: 600px;
+    padding-bottom: 5px;
+}
+
+#content h2 {
+    font-size: 2em;
+    color: #3476A8;
+}
+
+#footer {
+    width: 900px;
+    height: 40px;
+    margin: 0 auto;
+    text-align: center;	
+    padding-top: 10px;
+    background: #418AB5;
+}
+
+#wrapperlogin {
+	width: 320px;
+	margin: auto;
+	margin-top: 100px;
+}
+
+#wrapperlogin h2 {
+    padding-left: 20px;
+    margin-bottom: 3px;
+    font-size: 15px;
+    font-weight: normal;
+    line-height: 38px;
+    color: #FFFFFF;
+    background: #3476A7 url('../images/h2.png') no-repeat;
+    background-size: 100%;
+}
+
+.step {
+	padding: 10px 10px 10px 10px;
+	border: 1px solid #E0EBF2;
+	width: 800px;
+	margin: auto;
+}
+
+label.error {
+	float: none;
+	color: red;
+	padding-left: .5em;
+	vertical-align: top;
+}
+
+em {
+	font-weight: bold;
+	padding-right: 1em;
+	vertical-align: top;
+}
