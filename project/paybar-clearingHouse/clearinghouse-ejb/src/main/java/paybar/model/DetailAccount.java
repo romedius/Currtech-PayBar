@@ -58,7 +58,7 @@ public class DetailAccount implements Serializable {
 	@Size(min = 6, max = 25)
 	private String password;
 
-	private String PhoneNumber;
+	private String phoneNumber;
 
 	@NotNull
 	@NotEmpty
@@ -125,7 +125,7 @@ public class DetailAccount implements Serializable {
 	}
 
 	public String getPhoneNumber() {
-		return PhoneNumber;
+		return phoneNumber;
 	}
 
 	public String getSureName() {
@@ -169,7 +169,7 @@ public class DetailAccount implements Serializable {
 	}
 
 	public void setPhoneNumber(String phoneNumber) {
-		PhoneNumber = phoneNumber;
+		this.phoneNumber = phoneNumber;
 	}
 
 	public void setSureName(String sureName) {

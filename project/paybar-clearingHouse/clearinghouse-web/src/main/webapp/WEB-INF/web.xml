@@ -39,4 +39,14 @@
     <servlet-name>LogoutServlet</servlet-name>
     <url-pattern>/cpanel/LogoutServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>TransactionServlet</display-name>
+    <servlet-name>TransactionServlet</servlet-name>
+    <servlet-class>paybar.webservlets.TransactionServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>TransactionServlet</servlet-name>
+    <url-pattern>/cpanel/TransactionServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

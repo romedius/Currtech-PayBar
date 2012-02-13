@@ -38,7 +38,7 @@ public class LoginServlet extends HttpServlet {
 				Connection conn = DriverManager.getConnection
 						("jdbc:mysql://localhost:3306/jboss", "jboss", "123produktpolizei");
 				
-				String query = "select id, userName, password from detailaccount where " +
+				String query = "select id, userName, firstName, sureName, phoneNumber, credit, password from detailaccount where " +
 						"userName = '" + request.getParameter("username") + "' and password = '"+ request.getParameter("password") + "';";
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(query);
@@ -46,6 +46,10 @@ public class LoginServlet extends HttpServlet {
 				if (rs.next()){
 					da.setId(rs.getInt(1));
 					da.setUserName(rs.getString(2));
+					da.setFirstName(rs.getString(3));
+					da.setSureName(rs.getString(4));
+					da.setPhoneNumber(rs.getString(5));
+					da.setCredit(rs.getLong(6));
 					response.sendRedirect("main.jsp");
 				} else {
 					request.setAttribute("error", "Password or username was not correct!");
