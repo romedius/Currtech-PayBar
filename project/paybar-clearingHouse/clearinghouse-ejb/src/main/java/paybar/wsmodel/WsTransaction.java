@@ -1,6 +1,7 @@
 package paybar.wsmodel;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import paybar.model.Transaction;
 
@@ -12,7 +13,7 @@ public class WsTransaction implements Serializable {
 
 	private double amount;
 
-	private long transactionTime;
+	private Date transactionTime;
 
 	private Long couponId;
 
@@ -48,11 +49,11 @@ public class WsTransaction implements Serializable {
 		this.amount = amount;
 	}
 
-	public long getTransactionTime() {
+	public Date getTransactionTime() {
 		return transactionTime;
 	}
 
-	public void setTransactionTime(long transactionTime) {
+	public void setTransactionTime(Date transactionTime) {
 		this.transactionTime = transactionTime;
 	}
 

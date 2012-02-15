@@ -1,6 +1,7 @@
 package paybar.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
@@ -25,7 +28,8 @@ public class Transaction implements Serializable {
 
 	double amount;
 
-	long transactionTime;
+	@Temporal(TemporalType.TIMESTAMP)
+	Date transactionTime;
 
 	@OneToOne
 	private Coupon coupon;
@@ -68,7 +72,7 @@ public class Transaction implements Serializable {
 		return id;
 	}
 
-	public long getTransactionTime() {
+	public Date getTransactionTime() {
 		return transactionTime;
 	}
 
@@ -80,7 +84,7 @@ public class Transaction implements Serializable {
 		this.id = id;
 	}
 
-	public void setTransactionTime(long transactionTime) {
+	public void setTransactionTime(Date transactionTime) {
 		this.transactionTime = transactionTime;
 	}
 

@@ -37,7 +37,8 @@
 		                		</tr>
 		                		<c:forEach items="${ transactions }" var="t">
 		                			<tr>
-		                				<td>${t.id}</td><td>${t.amount}</td><td>${t.transactionTime}</td>
+		                				<td>${t.id}</td><td>${t.amount/100}</td>
+		                				<td>${t.transactionTime}</td>
 		                				<td>${t.pos.name}</td>
 		                			</tr>
 		                		</c:forEach>

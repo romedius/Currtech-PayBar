@@ -43,6 +43,8 @@ p {
 
 
 #sidebar {
+	
+    margin-right: 20px;
     float: left;
     width: 220px;
     padding-bottom: 20px;
@@ -80,8 +82,8 @@ p {
 }
 
 #content {
-    float: right;
-    width: 600px;
+    margin-right: 5px;
+    padding-right: 10px;
     padding-bottom: 5px;
 }
 

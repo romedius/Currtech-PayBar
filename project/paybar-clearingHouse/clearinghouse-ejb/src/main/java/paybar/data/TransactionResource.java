@@ -1,5 +1,6 @@
 package paybar.data;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -20,7 +21,7 @@ public class TransactionResource {
 	@PersistenceContext(name = "primary")
 	private EntityManager em;
 
-	public void createTransaction(double amount, long tranactionTime) {
+	public void createTransaction(double amount, Date tranactionTime) {
 		Transaction transactionNew = new Transaction();
 		transactionNew.setAmount(amount);
 		transactionNew.setTransactionTime(tranactionTime);
@@ -38,7 +39,7 @@ public class TransactionResource {
 	}
 
 	public void createTransactionWithCoupon(long ammount, String couponCode,
-			String Message, String posId, long transactionTime, Long preTransactionCredit, Long pastTransactionCredit) throws PaybarResourceException {
+			String Message, String posId, Date transactionTime, Long preTransactionCredit, Long pastTransactionCredit) throws PaybarResourceException {
 		Query query = em
 				.createQuery("Select a from Coupon a where a.couponCode like :param");
 		query.setParameter("param", couponCode);

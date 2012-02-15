@@ -4,7 +4,7 @@
 	<div class="box">
 		<p>
 			You are logged in as:<br />
-			<c:out value="${user.userName}" />
+			<b><c:out value="${user.userName}" /></b>
 		</p>
 	</div>
 

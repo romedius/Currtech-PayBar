@@ -1,5 +1,6 @@
 package paybar.controller;
 
+import java.util.Date;
 import java.util.logging.Logger;
 
 import javax.ejb.ActivationConfigProperty;
@@ -47,7 +48,7 @@ public class DelayedTransactionProcessor implements MessageListener {
 
 			log.info(text);
 			if (cr.isValidCoupon(transactionMessage.getTanCode())){
-				tr.createTransactionWithCoupon(transactionMessage.getAmount(), transactionMessage.getTanCode(), text, transactionMessage.getPosId(), transactionMessage.getTimestamp(),transactionMessage.getPreTransactionCredit(), transactionMessage.getPastTransactionCredit());
+				tr.createTransactionWithCoupon(transactionMessage.getAmount(), transactionMessage.getTanCode(), text, transactionMessage.getPosId(), new Date(transactionMessage.getTimestamp()),transactionMessage.getPreTransactionCredit(), transactionMessage.getPastTransactionCredit());
 			}  
 		} catch (Throwable e) {
 			e.printStackTrace();
