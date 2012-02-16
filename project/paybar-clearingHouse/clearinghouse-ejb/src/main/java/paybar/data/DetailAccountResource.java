@@ -42,11 +42,12 @@ public class DetailAccountResource {
 		newDetailAccount.setLocationHash(locationhash);
 		newDetailAccount.setCredit(credit);
 		newDetailAccount.setSecurityKey(securityKey);
-	//	newDetailAccount.setOldCoupons(new ArrayList<Coupon>()); // There are no
-																	// used
-																	// coupons
-																	// on the
-																	// Startup
+		// newDetailAccount.setOldCoupons(new ArrayList<Coupon>()); // There are
+		// no
+		// used
+		// coupons
+		// on the
+		// Startup
 		em.persist(newDetailAccount);
 		em.flush();
 	}
@@ -56,24 +57,26 @@ public class DetailAccountResource {
 		em.flush();
 	}
 
-	public DetailAccount getUserByName(String name, boolean eager) throws NoResultException,Exception {
-			Query query = em.createNamedQuery("getUserByName");
-			query.setParameter(1, name);
-			DetailAccount result = (DetailAccount) query.getSingleResult();
-			if (eager) {
-				result.getCoupons().size();
-			}
-			return result;
-			
+	public DetailAccount getUserByName(String name, boolean eager)
+			throws NoResultException, Exception {
+		Query query = em.createNamedQuery("getUserByName");
+		query.setParameter(1, name);
+		DetailAccount result = (DetailAccount) query.getSingleResult();
+		if (eager) {
+			result.getCoupons().size();
+		}
+		return result;
+
 	}
 
-	public List<Coupon> getCouponListByUserName(String name) throws NoResultException,Exception {
+	public List<Coupon> getCouponListByUserName(String name)
+			throws NoResultException, Exception {
 		List<Coupon> coupons = new ArrayList<Coupon>();
-		DetailAccount da = getUserByName(name,false);
+		DetailAccount da = getUserByName(name, false);
 		coupons.addAll(da.getCoupons());
 		return coupons;
 	}
-	
+
 	public void updateDetailAccount(DetailAccount detailAccount) {
 		em.merge(detailAccount);
 		em.flush();
@@ -99,24 +102,33 @@ public class DetailAccountResource {
 		Date validUntil = new Date(currentTime + Coupon.VALID_TIME_OF_COUPON);
 		Random r = new Random(currentTime);
 		for (int i = currentCoupons.size(); i < Coupon.GENERATE_NUM_OF_CUPONS; i++) {
-			Coupon coupon = new Coupon(result.getLocationHash(),
-					validFrom, validUntil, null, false,
-					result.getLocationHash() + result.getId()
-							+ "." + i + "." + r.nextInt()); // TODO: code
-															// generation
-															// needs to be
-															// improved.
-															// Maybe calculate
-															// some
-															// time + index hash
-															// out
-															// of the user id
+			Coupon coupon = new Coupon(result.getLocationHash(), validFrom,
+					validUntil, null, false, result.getLocationHash()
+							+ result.getId() + "." + i + "." + r.nextInt()); // TODO:
+																				// code
+																				// generation
+																				// needs
+																				// to
+																				// be
+																				// improved.
+																				// Maybe
+																				// calculate
+																				// some
+																				// time
+																				// +
+																				// index
+																				// hash
+																				// out
+																				// of
+																				// the
+																				// user
+																				// id
 			cr.createNewCoupon(coupon);
 			currentCoupons.add(coupon);
 		}
 		em.merge(result);
 		em.flush();
-		
+
 	}
 
 }
