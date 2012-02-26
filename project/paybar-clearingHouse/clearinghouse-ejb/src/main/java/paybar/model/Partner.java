@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -13,6 +15,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
+@NamedQueries({ @NamedQuery(name = "getPartnerByName", query = "Select p FROM Partner p WHERE p.userName = ?1") })
 public class Partner implements Serializable {
 
 	private static final long serialVersionUID = 1L;

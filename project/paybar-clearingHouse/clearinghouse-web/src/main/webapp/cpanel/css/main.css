@@ -19,14 +19,31 @@ p {
     text-align: justify;
 }
 
+.loginInput{
+	float:right;
+	width:200px;
+}
+
 #header {
     position: relative;
     width: 900px;
-    height: 160px;
     margin: 0 auto;
-    background: #26639C url('../images/header.png') no-repeat;
+    padding: 20px 0;
+    overflow: hidden;
 }
 
+#headerlogo{
+	 float: left;
+	 text-align: left;
+	 width: 450px;
+	 
+}
+
+#headertext{
+	 float: left;
+	 text-align: center;
+	 width: 450px;
+}
 #main {
     width: 100%;
     padding: 12px 0;

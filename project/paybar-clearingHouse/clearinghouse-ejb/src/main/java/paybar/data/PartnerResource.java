@@ -4,7 +4,9 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import paybar.model.Partner;
 import paybar.model.PointOfSale;
@@ -37,6 +39,18 @@ public class PartnerResource {
 	public void createNewpartner(Partner newPartner) {
 		em.persist(newPartner);
 		em.flush();
+	}
+	
+
+	public Partner getPartnerByName(String name, boolean eager)
+			throws NoResultException, Exception {
+		Query query = em.createNamedQuery("getPartnerByName");
+		query.setParameter(1, name);
+		Partner result = (Partner) query.getSingleResult();
+		if (eager) {
+			result.getPointsOfSale().size();
+		}
+		return result;
 	}
 
 }

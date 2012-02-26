@@ -4,8 +4,8 @@
 <jsp:useBean id="user" scope="session"
 	class="paybar.model.DetailAccount" />
 
-<c:if test="${ user.id le 1 }">
-	<jsp:forward page="index.jsp"></jsp:forward>
+<c:if test="${ partner.id le 1 }">
+	<jsp:forward page="login_company.jsp"></jsp:forward>
 </c:if>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -16,20 +16,19 @@
 <link rel="stylesheet" href="./css/main.css" type="text/css" />
 </head>
 <body>
-	<jsp:include page="include/header.jsp" />
+	<jsp:include page="include/header_company.jsp" />
 	<div id="main">
 		<div id="main2">
-			<jsp:include page="include/sidebar.jsp" />
+			<jsp:include page="include/sidebar_company.jsp" />
 			<div id="content">
 				<h2>Account Overview</h2>
 
 				<div>
-					<p>User ID: ${user.id}</p>
-					<p>User name: ${user.userName}</p>
-					<p>First name: ${user.firstName}</p>
-					<p>Last name: ${user.sureName}</p>
-					<p>Phone Number: ${user.phoneNumber}</p>
-					<p>Credit: ${user.credit}</p>
+					<p>Partner ID: ${partner.id}</p>
+					<p>LoginName: ${partner.userName}</p>
+					<p>Address: ${partner.adress}</p>
+					<p>BillingInformation: ${partner.billingInformation}</p>
+					<p>Credit: ${partner.credit}</p>
 				</div>
 			</div>
 		</div>

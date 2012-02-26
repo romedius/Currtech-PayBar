@@ -6,29 +6,28 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import paybar.data.DetailAccountResource;
-import paybar.model.DetailAccount;
+import paybar.data.PartnerResource;
+import paybar.model.Partner;
 
 
-
-/**
- * Servlet implementation class LoginServlet
- */
-public class LoginServlet extends HttpServlet {
+@WebServlet(name="PartnerLoginServlet",
+urlPatterns={"/cpanel/PartnerLoginServlet"}) 
+public class PartnerLoginServlet extends HttpServlet {
 
 	@Inject
-	private DetailAccountResource dar;
+	private PartnerResource pr;
 
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public LoginServlet() {
+	public PartnerLoginServlet() {
 		super();
 	}
 
@@ -50,29 +49,29 @@ public class LoginServlet extends HttpServlet {
 		if (request.getParameter("username") != null
 				&& request.getParameter("password") != null) {
 			try {
-				DetailAccount da = dar.getUserByName(
+				Partner p = pr.getPartnerByName(
 						request.getParameter("username"), false);
-				if (da.getPassword().equals(request.getParameter("password"))) {
-					request.getSession().setAttribute("user", da);
-					response.sendRedirect("main.jsp");
+				if (p.getPassword().equals(request.getParameter("password"))) {
+					request.getSession().setAttribute("partner", p);
+					response.sendRedirect("main_company.jsp");
 				} else {
 					request.setAttribute("error",
 							"Password or username was not correct!");
 					RequestDispatcher dispatcher = request
-							.getRequestDispatcher("index.jsp");
+							.getRequestDispatcher("login_company.jsp");
 					dispatcher.forward(request, response);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				if (e.getCause().getClass().equals(NoResultException.class)) {
 					request.setAttribute("error",
-							"Password or username was not correct!");
+							"Password or loginname was not correct!");
 				} else {
 					request.setAttribute("error",
 							"Service temporary not available! Maybe db is not running!");
 				}
 				RequestDispatcher dispatcher = request
-						.getRequestDispatcher("index.jsp");
+						.getRequestDispatcher("login_company.jsp");
 				dispatcher.forward(request, response);
 			}
 		}

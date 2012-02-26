@@ -16,9 +16,7 @@
 <link rel="stylesheet" href="./css/main.css" type="text/css" />
 </head>
 <body>
-	<div id="header">
-		<h1>Paybar - Manage your account</h1>
-	</div>
+	<jsp:include page="include/header.jsp" />
 	<div id="main">
 		<div id="main2">
 			<jsp:include page="include/sidebar.jsp" />

@@ -3,7 +3,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:useBean id="user" scope="session" class="paybar.model.DetailAccount"/>
 
-<c:if test="${ user.id le 1 }">
+<c:if test="${ partner.id le 1 }">
   <jsp:forward page="index.jsp"></jsp:forward>
 </c:if>
 
@@ -15,14 +15,14 @@
 	<link rel="stylesheet" href="./css/main.css" type="text/css" />
 </head>
 <body>
-	<jsp:include page="include/header.jsp" />
+	<jsp:include page="include/header_company.jsp" />
 	<div id="main">
 		<div id="main2">
-			<jsp:include page="include/sidebar.jsp" />
+			<jsp:include page="include/sidebar_company.jsp" />
 			<div id="content">			
 				<h2>Paybar Management System</h2>
 
-      			<p>Welcome to the Paybar User management System. Here you can Adapt the Personal User Information, verify your Transactions and lock the access of devices in case of theft.</p>
+      			<p>Welcome to the Paybar Partner management System. Here you can keep track off all transactions made from this company and it's customers.</p>
 			</div>
 		</div>
 		<div style="clear:both;"></div>
