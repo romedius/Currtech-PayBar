@@ -14,7 +14,6 @@
 		<li><a href="accoverview.jsp">Account Overview</a></li>
 		<li><a href="charge.jsp">Charge Money</a></li>
 		<li><a href="TransactionServlet">Transaction Overview</a></li>
-		<li><a href="lockDevices.jsp">Lock Devices</a></li>		
 		<li><a href="LogoutServlet">Logout</a></li>
 	</ul>
 </div>
