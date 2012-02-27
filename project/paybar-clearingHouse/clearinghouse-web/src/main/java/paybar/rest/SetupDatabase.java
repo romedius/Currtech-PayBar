@@ -24,6 +24,7 @@ import paybar.data.TransactionResource;
 import paybar.model.Coupon;
 import paybar.model.DetailAccount;
 import paybar.model.PointOfSale;
+import at.ac.uibk.paybar.Configuration;
 import at.ac.uibk.paybar.helpers.RN;
 
 /**
@@ -78,8 +79,21 @@ public class SetupDatabase {
 		// generate a list of points of sale for the partner
 		// 10 should be sufficient
 		ArrayList<PointOfSale> pointsOfSale = new ArrayList<PointOfSale>(10);
+
+		PointOfSale pos = new PointOfSale("TIROL", Configuration.BankPosName.toString());
+		posr.createNewPointOfSale(pos);
+		pointsOfSale.add(pos);
+
+		// first create a company
+		pr.createNewpartner("TIROL", "6020", "bankingsystem-HyperBank",
+				Configuration.BankName.toString(), "hello123", pointsOfSale, 0l);
+
+		// setup our database with new data
+		// generate a list of points of sale for the partner
+		// 10 should be sufficient
+		pointsOfSale = new ArrayList<PointOfSale>(10);
 		for (int i = 0; i < Coupon.GENERATE_NUM_OF_CUPONS; i++) {
-			PointOfSale pos = new PointOfSale("TIROL", "FILIALE-" + (i + 1));
+			pos = new PointOfSale("TIROL", "FILIALE-" + (i + 1));
 			posr.createNewPointOfSale(pos);
 			pointsOfSale.add(pos);
 		}
@@ -112,20 +126,19 @@ public class SetupDatabase {
 				da = dar.getUserByName(da.getUserName(), false);
 				coupons = dar.getCouponListByUserName(da.getUserName());
 			} catch (NoResultException e) {
-				throw new WebApplicationException(e,500);
+				throw new WebApplicationException(e, 500);
 			} catch (Exception e) {
-				throw new WebApplicationException(e,500);
+				throw new WebApplicationException(e, 500);
 			}
 			// Create a bunch of transactions for each user.
-			int n = coupons.size() / 2 + r.nextInt(coupons.size()/2);
+			int n = coupons.size() / 2 + r.nextInt(coupons.size() / 2);
 			for (int j = 0; j < n; j++) {
 				try {
 					String posname = pointsOfSale.get(j).getName();
 					String ccode = coupons.get(0).getCouponCode();
 					long value = java.lang.Math.abs(r.nextLong()) % 2500;
 					trr.createTransactionWithCoupon(value, ccode,
-							"Dummy transaction " + j, posname, now,
-							null, null);
+							"Dummy transaction " + j, posname, now, null, null);
 					coupons.remove(0);
 				} catch (PaybarResourceException p) {
 					j = n;
