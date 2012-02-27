@@ -28,8 +28,12 @@
 					<p>User name: ${user.userName}</p>
 					<p>First name: ${user.firstName}</p>
 					<p>Last name: ${user.sureName}</p>
+					<p>Address: ${user.adress}</p>
 					<p>Phone Number: ${user.phoneNumber}</p>
 					<p>Credit: ${user.credit}</p>
+				</div>
+				<div>
+					<a href="changeAccInfo.jsp">Change account data</a>
 				</div>
 			</div>
 		</div>
