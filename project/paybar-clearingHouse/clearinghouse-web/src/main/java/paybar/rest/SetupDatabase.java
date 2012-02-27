@@ -137,7 +137,7 @@ public class SetupDatabase {
 					String posname = pointsOfSale.get(j).getName();
 					String ccode = coupons.get(0).getCouponCode();
 					long value = java.lang.Math.abs(r.nextLong()) % 2500;
-					trr.createTransactionWithCoupon(value, ccode,
+					trr.createDebitTransaction(value, ccode,
 							"Dummy transaction " + j, posname, now, null, null);
 					coupons.remove(0);
 				} catch (PaybarResourceException p) {

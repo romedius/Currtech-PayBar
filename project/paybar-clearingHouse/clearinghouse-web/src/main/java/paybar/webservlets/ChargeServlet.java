@@ -18,9 +18,7 @@ import paybar.data.TransactionResource;
 import paybar.model.DetailAccount;
 import at.ac.uibk.paybar.Configuration;
 
-
-@WebServlet(name="ChargeServlet",
-urlPatterns={"/cpanel/ChargeServlet"}) 
+@WebServlet(name = "ChargeServlet", urlPatterns = { "/cpanel/ChargeServlet" })
 public class ChargeServlet extends HttpServlet {
 
 	@Inject
@@ -31,7 +29,6 @@ public class ChargeServlet extends HttpServlet {
 
 	@Inject
 	private DetailAccountResource dar;
-	
 
 	private static final long serialVersionUID = 1L;
 
@@ -60,24 +57,40 @@ public class ChargeServlet extends HttpServlet {
 		if (request.getParameter("creditcard") != null
 				&& request.getParameter("amount") != null) {
 			try {
-				Double d = Double.parseDouble(request.getParameter("amount"))*100;
-				long amount=d.longValue();
-				DetailAccount da = (DetailAccount) request.getSession().getAttribute("user");
+				Double d = Double.parseDouble(request.getParameter("amount")) * 100;
+				long amount = d.longValue();
+				DetailAccount da = (DetailAccount) request.getSession()
+						.getAttribute("user");
 				Date now = new Date();
-				tr.createTransactionWithoutCoupon(amount, "Charging Account from Credit Card: " + request.getParameter("creditcard"), Configuration.BankPosName.toString(), da.getUserName(), now);
-				request.setAttribute("message", "The Ammount has ben charged to your Account");
+				tr.createChargeTransaction(
+						amount,
+						"Charging Account from Credit Card: "
+								+ request.getParameter("creditcard"),
+						Configuration.BankPosName.toString(), da.getUserName(),
+						now);
+				request.setAttribute("message",
+						"The Ammount has ben charged to your Account");
 				RequestDispatcher dispatcher = request
 						.getRequestDispatcher("charge.jsp");
 				dispatcher.forward(request, response);
-				da.setCredit(dar.getUserByName(da.getUserName(), false).getCredit());
+				da.setCredit(dar.getUserByName(da.getUserName(), false)
+						.getCredit());
 			} catch (Exception e) {
 				e.printStackTrace();
-				if (e.getCause()!=null && e.getCause().getClass().equals(PaybarResourceException.class)) {
-					request.setAttribute("error",
-							e.getCause().getMessage());
+				if (e.getCause() != null
+						&& e.getCause().getClass()
+								.equals(PaybarResourceException.class)) {
+					request.setAttribute("error", e.getCause().getMessage());
 				} else {
-					request.setAttribute("error",
-							"Service temporary not available! Maybe db is not running!" + e.getMessage());
+					if (e.getCause() != null
+							&& e.getCause().getClass()
+									.equals(PaybarResourceException.class)) {
+						request.setAttribute("error", e.getCause().getMessage());
+					} else {
+						request.setAttribute("error",
+								"Service temporary not available! Maybe db is not running!"
+										+ e.getMessage());
+					}
 				}
 				RequestDispatcher dispatcher = request
 						.getRequestDispatcher("charge.jsp");

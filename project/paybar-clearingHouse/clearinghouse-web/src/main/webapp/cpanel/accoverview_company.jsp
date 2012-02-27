@@ -28,7 +28,7 @@
 					<p>LoginName: ${partner.userName}</p>
 					<p>Address: ${partner.adress}</p>
 					<p>BillingInformation: ${partner.billingInformation}</p>
-					<p>Credit: ${partner.credit}</p>
+					<p>Credit: ${partner.credit/100}</p>
 				</div>
 			</div>
 		</div>

@@ -48,7 +48,7 @@ public class DelayedTransactionProcessor implements MessageListener {
 
 			log.info(text);
 			if (cr.isValidCoupon(transactionMessage.getTanCode())){
-				tr.createTransactionWithCoupon(transactionMessage.getAmount(), transactionMessage.getTanCode(), text, transactionMessage.getPosId(), new Date(transactionMessage.getTimestamp()),transactionMessage.getPreTransactionCredit(), transactionMessage.getPastTransactionCredit());
+				tr.createDebitTransaction(transactionMessage.getAmount(), transactionMessage.getTanCode(), text, transactionMessage.getPosId(), new Date(transactionMessage.getTimestamp()),transactionMessage.getPreTransactionCredit(), transactionMessage.getPastTransactionCredit());
 			}  
 		} catch (Throwable e) {
 			e.printStackTrace();

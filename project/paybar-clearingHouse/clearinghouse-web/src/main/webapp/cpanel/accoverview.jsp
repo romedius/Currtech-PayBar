@@ -30,7 +30,7 @@
 					<p>Last name: ${user.sureName}</p>
 					<p>Address: ${user.adress}</p>
 					<p>Phone Number: ${user.phoneNumber}</p>
-					<p>Credit: ${user.credit}</p>
+					<p>Credit: ${user.credit/100}</p>
 				</div>
 				<div>
 					<a href="changeAccInfo.jsp">Change account data</a>

@@ -41,7 +41,7 @@ public class TransactionResource {
 	 * This Method is used to create a transactions where the user account get's
 	 * charged. The Ammount must be positive.
 	 * */
-	public void createTransactionWithoutCoupon(long amount, String Message,
+	public void createChargeTransaction(long amount, String Message,
 			String posId, String username, Date transactionTime)
 			throws PaybarResourceException {
 		Query query = em
@@ -67,7 +67,7 @@ public class TransactionResource {
 			throw new PaybarResourceException("Pos does not exists");
 		}
 		if (amount > 0) {
-			long newAmmount = da.getCredit() - amount;
+			long newAmmount = da.getCredit() + amount;
 			Transaction tr = new Transaction();
 			/* Create transaction */
 			tr.setAmount(amount);
@@ -89,9 +89,9 @@ public class TransactionResource {
 
 	/**
 	 * This Method is used to create a transactions where the user account get's
-	 * charged. The Ammount must be positive.
+	 * debited. The Ammount must be positive.
 	 * */
-	public void createTransactionWithCoupon(long ammount, String couponCode,
+	public void createDebitTransaction(long ammount, String couponCode,
 			String Message, String posId, Date transactionTime,
 			Long preTransactionCredit, Long pastTransactionCredit)
 			throws PaybarResourceException {
@@ -147,7 +147,7 @@ public class TransactionResource {
 
 				Transaction tr = new Transaction();
 				/* Create transaction */
-				tr.setAmount(ammount);
+				tr.setAmount(0-ammount);
 				tr.setCoupon(c);
 				tr.setDetailAccount(da);
 				tr.setPos(pos);
