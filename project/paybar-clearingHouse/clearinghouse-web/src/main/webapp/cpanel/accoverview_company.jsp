@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<jsp:useBean id="user" scope="session"
-	class="paybar.model.DetailAccount" />
+<jsp:useBean id="partner" scope="session"
+	class="paybar.model.Partner" />
 
 <c:if test="${ partner.id le 1 }">
 	<jsp:forward page="login_company.jsp"></jsp:forward>

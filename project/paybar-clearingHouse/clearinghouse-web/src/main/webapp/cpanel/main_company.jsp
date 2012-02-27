@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<jsp:useBean id="user" scope="session" class="paybar.model.DetailAccount"/>
+<jsp:useBean id="partner" scope="session" class="paybar.model.Partner"/>
 
 <c:if test="${ partner.id le 1 }">
-  <jsp:forward page="index.jsp"></jsp:forward>
+  <jsp:forward page="login_company.jsp"></jsp:forward>
 </c:if>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">

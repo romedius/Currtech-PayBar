@@ -15,7 +15,9 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
-@NamedQueries({ @NamedQuery(name = "getPartnerByName", query = "Select p FROM Partner p WHERE p.userName = ?1") })
+@NamedQueries({
+		@NamedQuery(name = "getPartnerByName", query = "Select p FROM Partner p WHERE p.userName = ?1"),
+		@NamedQuery(name = "getPartnerByPosName", query = "Select p FROM Partner p, IN (p.pointsOfSale) ps WHERE ps.name = ?1") })
 public class Partner implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -48,7 +50,6 @@ public class Partner implements Serializable {
 
 	long credit;
 
-	
 	/**
 	 * This is the list of PointsOfSale of a Partner.
 	 * */

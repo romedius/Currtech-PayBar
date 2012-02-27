@@ -12,7 +12,7 @@
 	<ul>
 		<li><a href="main_company.jsp">Home</a></li>
 		<li><a href="accoverview_company.jsp">Account Overview</a></li>
-		<li><a href="TransactionServlet_company">Transaction Overview</a></li>
+		<li><a href="PartnerTransactionServlet">Transaction Overview</a></li>
 		<li><a href="LogoutServlet">Logout</a></li>
 	</ul>
 </div>

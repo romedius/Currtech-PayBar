@@ -25,7 +25,6 @@ public class TransactionResource {
 		Transaction transactionNew = new Transaction();
 		transactionNew.setAmount(amount);
 		transactionNew.setTransactionTime(tranactionTime);
-		
 
 		em.persist(transactionNew);
 		em.flush();
@@ -39,7 +38,9 @@ public class TransactionResource {
 	}
 
 	public void createTransactionWithCoupon(long ammount, String couponCode,
-			String Message, String posId, Date transactionTime, Long preTransactionCredit, Long pastTransactionCredit) throws PaybarResourceException {
+			String Message, String posId, Date transactionTime,
+			Long preTransactionCredit, Long pastTransactionCredit)
+			throws PaybarResourceException {
 		Query query = em
 				.createQuery("Select a from Coupon a where a.couponCode like :param");
 		query.setParameter("param", couponCode);
@@ -51,15 +52,16 @@ public class TransactionResource {
 		}
 		/* Make transaction */
 		query = em
-				// SELECT da FROM DetailAccount da, IN (da.coupons) c  WHERE :param2 = c  
-				// SELECT da FROM DetailAccount da, Coupon c WHERE c = :param2 AND c IN (da.coupons)
+		// SELECT da FROM DetailAccount da, IN (da.coupons) c WHERE :param2 = c
+		// SELECT da FROM DetailAccount da, Coupon c WHERE c = :param2 AND c IN
+		// (da.coupons)
 				.createQuery("SELECT da FROM DetailAccount da, IN (da.coupons) c  WHERE :param2 = c");
 		query.setParameter("param2", c);
 		DetailAccount da = null;
 		try {
 			da = (DetailAccount) query.getSingleResult();
 		} catch (NoResultException e) {
-			throw new PersistenceException("Coupon already used :" + couponCode );
+			throw new PersistenceException("Coupon already used :" + couponCode);
 		}
 		query = em
 				.createQuery("Select p from PointOfSale p where p.name like :param3 ");
@@ -72,12 +74,16 @@ public class TransactionResource {
 			throw new PaybarResourceException("Pos does not exists");
 		}
 		if (da.getCredit() > ammount) {
-			if (preTransactionCredit!=null && da.getCredit()!=preTransactionCredit) {
-				throw new PaybarResourceException("Infinispan cache information of user's credit before transaction is not equal to that in the Database");
+			if (preTransactionCredit != null
+					&& da.getCredit() != preTransactionCredit) {
+				throw new PaybarResourceException(
+						"Infinispan cache information of user's credit before transaction is not equal to that in the Database");
 			}
 			long newAmmount = da.getCredit() - ammount;
-			if (preTransactionCredit!=null && newAmmount!=preTransactionCredit) {
-				throw new PaybarResourceException("Infinispan cache information of user's credit after transaction is not equal to that in the database");
+			if (preTransactionCredit != null
+					&& newAmmount != preTransactionCredit) {
+				throw new PaybarResourceException(
+						"Infinispan cache information of user's credit after transaction is not equal to that in the database");
 			}
 
 			Transaction tr = new Transaction();
@@ -94,9 +100,7 @@ public class TransactionResource {
 			em.persist(tr);
 			em.merge(da);
 			em.flush();
-		}
-		else
-		{
+		} else {
 			throw new PaybarResourceException("User is out of credit");
 		}
 	}

@@ -7,7 +7,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-	<title>Hotel Management - Control Panel</title>
+	<title>Paybar Login</title>
 	<link rel="stylesheet" href="./css/main.css" type="text/css" />
 </head>
 <body>
