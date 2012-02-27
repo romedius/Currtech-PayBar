@@ -13,6 +13,16 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 <title>Paybar</title>
+
+<!-- jquery main javascript file -->
+<script src="javascript/jquery-1.7.1.js"></script>
+
+<!-- form Validation -->
+<script type="text/javascript" src="javascript/jquery.validate.js"></script>
+
+<!-- register specific javascript -->
+<script src="javascript/jquery.charge.js"></script>
+
 <link rel="stylesheet" href="./css/main.css" type="text/css" />
 </head>
 <body>
@@ -22,7 +32,7 @@
 			<jsp:include page="include/sidebar.jsp" />
 			<div id="content">
 				<h2>Charge Money</h2>
-				<form name="cPanelLogin" method="post" action="ChargeServlet">
+				<form name="chargeForm" id="chargeForm" method="post" action="ChargeServlet">
 					<fieldset>
 						<div style="padding: 20px;">
 							<p>
