@@ -22,18 +22,20 @@
 			<jsp:include page="include/sidebar.jsp" />
 			<div id="content">
 				<h2>Account Overview</h2>
-
+				
+				<c:if test="${not empty error}"><p style="color: red;">${error}</p></c:if>
+				
 				<div>
-					<p>User ID: ${user.id}</p>
-					<p>User name: ${user.userName}</p>
-					<p>First name: ${user.firstName}</p>
-					<p>Last name: ${user.sureName}</p>
-					<p>Address: ${user.adress}</p>
-					<p>Phone Number: ${user.phoneNumber}</p>
-					<p>Credit: ${user.credit/100}</p>
+					<p>User ID: ${daOverview.id}</p>
+					<p>User name: ${daOverview.userName}</p>
+					<p>First name: ${daOverview.firstName}</p>
+					<p>Last name: ${daOverview.sureName}</p>
+					<p>Address: ${daOverview.adress}</p>
+					<p>Phone Number: ${daOverview.phoneNumber}</p>
+					<p>Credit: ${daOverview.credit/100}</p>
 				</div>
 				<div>
-					<a href="changeAccInfo.jsp">Change account data</a>
+					<a href="PrepareChangeAccountServlet">Change account data</a>
 				</div>
 			</div>
 		</div>
