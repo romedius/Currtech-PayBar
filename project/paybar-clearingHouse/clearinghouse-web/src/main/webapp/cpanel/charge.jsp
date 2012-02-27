@@ -20,7 +20,7 @@
 <!-- form Validation -->
 <script type="text/javascript" src="javascript/jquery.validate.js"></script>
 
-<!-- register specific javascript -->
+<!-- file specific javascript -->
 <script src="javascript/jquery.charge.js"></script>
 
 <link rel="stylesheet" href="./css/main.css" type="text/css" />
