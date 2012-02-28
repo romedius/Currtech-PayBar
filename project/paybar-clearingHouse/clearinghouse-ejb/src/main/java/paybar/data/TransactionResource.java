@@ -89,11 +89,10 @@ public class TransactionResource {
 
 	/**
 	 * This Method is used to create a transactions where the user account get's
-	 * debited. The Ammount must be positive.
+	 * debited. The Amount must be positive.
 	 * */
-	public void createDebitTransaction(long ammount, String couponCode,
-			String Message, String posId, Date transactionTime,
-			Long preTransactionCredit, Long pastTransactionCredit)
+	public void createDebitTransaction(long amount, String couponCode,
+			String Message, String posId, Date transactionTime)
 			throws PaybarResourceException {
 		Query query = em
 				.createQuery("Select a from Coupon a where a.couponCode like :param");
@@ -128,8 +127,10 @@ public class TransactionResource {
 			throw new PaybarResourceException("Pos does not exists");
 		}
 
-		if (ammount > 0) {
-			if (da.getCredit() > ammount) {
+		if (amount > 0) {
+			if (da.getCredit() > amount) {
+				/*
+				 * removed due to assumed uselessness
 				if (preTransactionCredit != null
 						&& da.getCredit() >= preTransactionCredit) {
 					// Maybe there was an update of the amounts due to a charge
@@ -138,16 +139,21 @@ public class TransactionResource {
 					throw new PaybarResourceException(
 							"Infinispan cache information of user's credit before transaction is not equal to that in the Database");
 				}
-				long newAmmount = da.getCredit() - ammount;
+				*/
+				long newAmmount = da.getCredit() - amount;
+				
+				/*
+				 * removed due to assumed uselessness
 				if (pastTransactionCredit != null
 						&& newAmmount >= pastTransactionCredit) {
 					throw new PaybarResourceException(
 							"Infinispan cache information of user's credit after transaction is not equal to that in the database");
 				}
+				*/
 
 				Transaction tr = new Transaction();
 				/* Create transaction */
-				tr.setAmount(0-ammount);
+				tr.setAmount(0-amount);
 				tr.setCoupon(c);
 				tr.setDetailAccount(da);
 				tr.setPos(pos);

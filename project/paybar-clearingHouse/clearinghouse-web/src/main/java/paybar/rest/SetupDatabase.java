@@ -135,10 +135,10 @@ public class SetupDatabase {
 			for (int j = 0; j < n; j++) {
 				try {
 					String posname = pointsOfSale.get(j).getName();
-					String ccode = coupons.get(0).getCouponCode();
+					String couponCode = coupons.get(0).getCouponCode();
 					long value = java.lang.Math.abs(r.nextLong()) % 2500;
-					trr.createDebitTransaction(value, ccode,
-							"Dummy transaction " + j, posname, now, null, null);
+					trr.createDebitTransaction(value, couponCode,
+							"Dummy transaction " + j, posname, now);
 					coupons.remove(0);
 				} catch (PaybarResourceException p) {
 					j = n;
