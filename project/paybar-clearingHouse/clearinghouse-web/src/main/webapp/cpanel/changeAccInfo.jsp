@@ -33,46 +33,66 @@
 			<div id="content">
 				<h2>Change Account Information</h2>
 
-				<c:if test="${not empty error}"><p style="color: red;">${error}</p></c:if>
+				<c:choose>
+					<c:when test="${not empty error}">
+						<p style="color: red;">${error}</p>
+					</c:when>
+					<c:otherwise>
+						<p>Keep password empty if you do not want to change the password</p>
+						<form name="changeForm" id="changeForm"
+							action="ChangeAccInfoServlet" method="post">
+							<div style="padding: 20px;">
+								<table>
+									<tr>
+										<td>First name:</td>
+										<td><input id="firstname" name="firstname" type="text"
+											value="${daOverview.firstName}" /></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Last name:</td>
+										<td><input id="surename" name="surename" type="text"
+											value="${daOverview.sureName}" /></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Street:</td>
+										<td><input id="address" name="address" type="text"
+											value="${daOverview.adress}" /></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Phone Number:</td>
+										<td><input id="phoneNumber" name="phoneNumber" type="text"
+											value="${daOverview.phoneNumber}" /></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Password:</td>
+										<td><input id="password1" name="password1"
+											type="password" /></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Repeat Password:</td>
+										<td><input id="password2" name="password2"
+											type="password" /></td>
+										<td id="passfield" style="color: red;"></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td></td>
+										<td><button style="width: 100px;" type="submit"
+												class="submit" id="changeSubmit">Submit Change</button></td>
+									</tr>
+								</table>
+							</div>
+						</form>
+					</c:otherwise>
+				</c:choose>
 
-				<form name="changeForm" id="changeForm" action="ChangeAccInfoServlet" method="post">
-					<div style="padding: 20px;">
-						<table>
-							<tr>
-								<td>First name:</td>
-								<td><input id="firstname" name="firstname" type="text" value="${user.firstName}"/></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td>Last name:</td>
-								<td><input id="surename" name="surename" type="text" value="${user.sureName}" /></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td>Street:</td>
-								<td><input id="address" name="address" type="text" value="${user.adress}"/></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td>Password:</td>
-								<td><input id="password1" name="password1" type="password" /></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td>Repeat Password:</td>
-								<td><input id="password2" name="password2" type="password" /></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td></td>
-								<td></td>
-								<td><button style="width: 100px;" type="submit"
-										class="submit" id="changeSubmit">Submit Change</button></td>
-							</tr>
-						</table>
-					</div>
-				</form>
-				
+
+
 			</div>
 		</div>
 		<div style="clear: both;"></div>
