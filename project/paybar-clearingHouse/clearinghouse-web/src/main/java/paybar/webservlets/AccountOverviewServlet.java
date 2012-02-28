@@ -13,7 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 import paybar.data.DetailAccountResource;
 import paybar.model.DetailAccount;
 
-
+/**
+ * AccountOverviewServlet
+ * Controller for the overview Java server page.
+ * Prepares the DetailAccount object to be displayed
+ * on accoverview.jsp
+ */
 @WebServlet(name="AccountOverviewServlet",
 urlPatterns={"/cpanel/AccountOverviewServlet"}) 
 public class AccountOverviewServlet extends HttpServlet {
@@ -35,8 +40,6 @@ public class AccountOverviewServlet extends HttpServlet {
 					request.setAttribute("error", "There was an error in loading the account data!");
 					e.printStackTrace();
 				}
-				
-
 				
 				RequestDispatcher dispatcher = request
 						.getRequestDispatcher("accoverview.jsp");

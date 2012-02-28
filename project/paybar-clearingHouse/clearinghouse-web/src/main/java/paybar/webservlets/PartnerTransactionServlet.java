@@ -15,7 +15,11 @@ import paybar.data.TransactionResource;
 import paybar.model.Partner;
 import paybar.model.Transaction;
 
-
+/**
+ * PartnerTransactionServlet
+ * Controller that prepares the Transactions
+ * that belong the that company
+ */
 @WebServlet(name="PartnerTransactionServlet",
 urlPatterns={"/cpanel/PartnerTransactionServlet"}) 
 public class PartnerTransactionServlet extends HttpServlet {
@@ -28,6 +32,7 @@ public class PartnerTransactionServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		Partner p = (Partner) request.getSession().getAttribute(
 				"partner");
+		// check if partner is logged in
 		if (p != null) {
 				List<Transaction> transactionList = trr
 						.getTransactionsByCompanyName(p.getUserName());
@@ -37,6 +42,7 @@ public class PartnerTransactionServlet extends HttpServlet {
 						.getRequestDispatcher("transactions_company.jsp");
 				dispatcher.forward(request, response);
 		} else {
+			// user not logged in, forward to
 			request.getSession().invalidate();
 			response.sendRedirect("login_company.jsp");
 		}

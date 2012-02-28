@@ -12,6 +12,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import paybar.helper.GenerationHelpers;
 import paybar.model.Coupon;
 import paybar.model.DetailAccount;
 
@@ -24,13 +25,16 @@ public class DetailAccountResource {
 	@Inject
 	private CouponResource cr;
 
+	@Inject
+	private GenerationHelpers gh;
+	
 	/**
 	 * creates a new Account
 	 */
 	public void createNewDetailAccount(String sureName, String firstName,
 			String userName, String password, String adress,
 			String phoneNumber, boolean active, String locationhash,
-			long credit, String securityKey) {
+			long credit) {
 		DetailAccount newDetailAccount = new DetailAccount();
 		newDetailAccount.setAdress(adress);
 		newDetailAccount.setFirstName(firstName);
@@ -41,13 +45,14 @@ public class DetailAccountResource {
 		newDetailAccount.setActive(active);
 		newDetailAccount.setLocationHash(locationhash);
 		newDetailAccount.setCredit(credit);
-		newDetailAccount.setSecurityKey(securityKey);
+		newDetailAccount.setSecurityKey(gh.getNextSecurityKey());
 		em.persist(newDetailAccount);
 		em.flush();
 		regenerateCoupons(userName);
 	}
 
 	public void createNewDetailAccount(DetailAccount newDetailAccount) {
+		newDetailAccount.setSecurityKey(gh.getNextSecurityKey());
 		em.persist(newDetailAccount);
 		em.flush();
 		regenerateCoupons(newDetailAccount.getUserName());
@@ -133,7 +138,7 @@ public class DetailAccountResource {
 		query.setParameter(1, username);
 		DetailAccount result = (DetailAccount) query.getSingleResult();
 		result.getCoupons().clear();
-		result.setSecurityKey("");
+		result.setSecurityKey(gh.getNextSecurityKey());
 		regenerateCoupons(username);	
 	}
 

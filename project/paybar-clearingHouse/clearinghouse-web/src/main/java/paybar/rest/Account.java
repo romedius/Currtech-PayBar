@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import paybar.data.DetailAccountResource;
 import paybar.data.ModelToWebserviceTransformer;
 import paybar.data.TransactionResource;
+import paybar.helper.GenerationHelpers;
 import paybar.model.DetailAccount;
 import paybar.model.Transaction;
 import paybar.wsmodel.WsTransaction;
@@ -36,9 +37,10 @@ public class Account {
 
 	@Inject
 	private TransactionResource trr;
-	
+
 	@Inject
 	private ModelToWebserviceTransformer mtwt;
+
 
 	@POST
 	@Path("/create")
@@ -51,8 +53,7 @@ public class Account {
 				ReturnMessageEnum.SUCCESS.toString());
 		return rm;
 	}
-	
-	
+
 	@GET
 	@Path("/get/{name}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -89,13 +90,11 @@ public class Account {
 		}
 	}
 
-
 	@GET
 	@Path("/getTransactioncnt/{name}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public int getTransactionCountByUsername(
-			@PathParam("name") String userName) {
+	public int getTransactionCountByUsername(@PathParam("name") String userName) {
 		try {
 			return trr.getTransactionsByUsername(userName).size();
 		} catch (NoResultException e) {

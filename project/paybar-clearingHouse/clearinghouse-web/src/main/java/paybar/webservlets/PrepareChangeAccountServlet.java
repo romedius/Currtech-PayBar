@@ -18,7 +18,12 @@ import paybar.model.DetailAccount;
 import paybar.model.Partner;
 import paybar.model.Transaction;
 
-
+/**
+ * PrepareChangeAccountServlet
+ * Servlet that prepares the detail account information
+ * for the user, this information (object) is added to the request
+ * and than displayed in the changeAccInfo.jsp
+ */
 @WebServlet(name="PrepareChangeAccountServlet",
 urlPatterns={"/cpanel/PrepareChangeAccountServlet"}) 
 public class PrepareChangeAccountServlet extends HttpServlet {
@@ -31,9 +36,11 @@ public class PrepareChangeAccountServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		DetailAccount da = (DetailAccount) request.getSession().getAttribute(
 				"user");
+		// check if user is logged in
 		if (da != null) {
 				DetailAccount daOverview;
 				try {
+					// retrieving the detail account of the user
 					daOverview = dar.getUserByName(da.getUserName(), false);
 					request.setAttribute("daOverview", daOverview);
 				} catch (Exception e) {
@@ -45,6 +52,7 @@ public class PrepareChangeAccountServlet extends HttpServlet {
 						.getRequestDispatcher("changeAccInfo.jsp");
 				dispatcher.forward(request, response);
 		} else {
+			// user is not logged in
 			request.getSession().invalidate();
 			response.sendRedirect("index.jsp");
 		}
