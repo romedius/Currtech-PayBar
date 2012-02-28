@@ -1,4 +1,4 @@
-package paybar.rest;
+package at.ac.uibk.paybar.messages;
 
 /**
  * This is the kind of request used for communicating with FastCheck. Objects of
@@ -8,6 +8,16 @@ package paybar.rest;
  * 
  */
 public class TransactionRequest {
+
+	public TransactionRequest() {
+		super();
+	}
+	
+	public TransactionRequest(long amount, String posOrBankId) {
+		super();
+		this.amount = amount;
+		this.posOrBankId = posOrBankId;
+	}
 
 	private long amount;
 	private String posOrBankId;

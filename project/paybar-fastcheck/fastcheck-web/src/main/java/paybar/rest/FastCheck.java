@@ -1,7 +1,5 @@
 package paybar.rest;
 
-
-
 import java.sql.SQLException;
 
 import javax.enterprise.context.RequestScoped;
@@ -24,7 +22,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
 import at.ac.uibk.paybar.messages.TransactionMessage;
-
+import at.ac.uibk.paybar.messages.TransactionRequest;
 
 /**
  * FastCheck is responsible for authorizing a transaction. This includes account
@@ -54,7 +52,7 @@ public class FastCheck {
 	 * @param tanCode
 	 * @param amount
 	 * @return
-	 * @throws NamingException 
+	 * @throws NamingException
 	 */
 	@POST
 	@Path("/tan/{tanCode}")
@@ -69,7 +67,8 @@ public class FastCheck {
 		if (transactionRequest != null) {
 			String posId = transactionRequest.getPosOrBankId();
 			long amount = transactionRequest.getAmount();
-			if (posId != null && VALID_POS_ID.equals(VALID_POS_ID)) { // TODO: Weiter
+			if (posId != null && VALID_POS_ID.equals(VALID_POS_ID)) { // TODO:
+																		// Weiter
 				if (tanCode != null && VALID_TAN_CODE.equals(VALID_TAN_CODE)) {
 					// see if account has enough credit
 					long oldCredit = CREDIT;
@@ -77,59 +76,59 @@ public class FastCheck {
 					success = newCredit > 0.1d;
 
 					if (success) {
-						
+
 						// TODO: fetch username from cache
 						TransactionMessage transactionMessage = new TransactionMessage(
-								TransactionMessage.TYPE_TRANSACTION, posId, amount, System.currentTimeMillis(), "dummy", tanCode);
+								TransactionMessage.TYPE_TRANSACTION, posId,
+								amount, System.currentTimeMillis(), "dummy",
+								tanCode);
 						// transmit to JMS
-						
+
 						// obtain context
-						
+
 						InitialContext ic = null;
-					      Connection jmsConnection = null;
-					      java.sql.Connection jdbcConnection = null;
+						Connection jmsConnection = null;
+						java.sql.Connection jdbcConnection = null;
 
-					      try {
-							try
-							  {
-							     // Step 1. Lookup the initial context
-							     ic = new InitialContext();
+						try {
+							try {
+								// Step 1. Lookup the initial context
+								ic = new InitialContext();
 
-							     // JMS operations
+								// JMS operations
 
-							     // Step 2. Look up the XA Connection Factory
-							     ConnectionFactory cf = (ConnectionFactory)ic.lookup("java:/JmsXA");
+								// Step 2. Look up the XA Connection Factory
+								ConnectionFactory cf = (ConnectionFactory) ic
+										.lookup("java:/JmsXA");
 
-							     // Step 3. Look up the Queue
-							     Queue queue = (Queue)ic.lookup("queue/test");
+								// Step 3. Look up the Queue
+								Queue queue = (Queue) ic.lookup("queue/test");
 
-							     // Step 4. Create a connection, a session and a message producer for the queue
-							     jmsConnection = cf.createConnection();
-							     Session session = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-							     MessageProducer messageProducer = session.createProducer(queue);
+								// Step 4. Create a connection, a session and a
+								// message producer for the queue
+								jmsConnection = cf.createConnection();
+								Session session = jmsConnection.createSession(
+										false, Session.AUTO_ACKNOWLEDGE);
+								MessageProducer messageProducer = session
+										.createProducer(queue);
 
-							     // Step 5. Create a Text Message
-							     ObjectMessage message = session.createObjectMessage(transactionMessage);
-							     messageProducer.send(message);
-							     
+								// Step 5. Create a Text Message
+								ObjectMessage message = session
+										.createObjectMessage(transactionMessage);
+								messageProducer.send(message);
 
-							  }
-							  finally
-							  {
-							     // Step 12. Be sure to close all resources!
-							     if (ic != null)
-							     {
-							        ic.close();
-							     }
-							     if (jmsConnection != null)
-							     {
-							        jmsConnection.close();
-							     }
-							     if (jdbcConnection != null)
-							     {
-							        jdbcConnection.close();
-							     }
-							  }
+							} finally {
+								// Step 12. Be sure to close all resources!
+								if (ic != null) {
+									ic.close();
+								}
+								if (jmsConnection != null) {
+									jmsConnection.close();
+								}
+								if (jdbcConnection != null) {
+									jdbcConnection.close();
+								}
+							}
 						} catch (NamingException e) {
 							throw new WebApplicationException(e);
 						} catch (JMSException e) {
@@ -137,7 +136,7 @@ public class FastCheck {
 						} catch (SQLException e) {
 							throw new WebApplicationException(e);
 						}
-						
+
 					}
 				}
 			}
@@ -164,13 +163,14 @@ public class FastCheck {
 	 * @param tanCode
 	 * @param amount
 	 * @return
-	 * @throws NamingException 
+	 * @throws NamingException
 	 */
 	@POST
-	@Path("/charge/{username}")
+	@Path("/charge/{username}/{creditCardNumber}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public String charge(@PathParam("username") String username,
+			@PathParam("creditCardNumber") String creditCardNumber,
 			TransactionRequest transactionRequest) {
 		String result = null;
 		boolean success = true;
@@ -179,73 +179,71 @@ public class FastCheck {
 		if (transactionRequest != null) {
 			String posId = transactionRequest.getPosOrBankId();
 			long amount = transactionRequest.getAmount();
-			
-					if (success) {
-						TransactionMessage transactionMessage = new TransactionMessage(
-								TransactionMessage.TYPE_CHARGE, posId, amount,
-								System.currentTimeMillis(), username, null);
-						// transmit to JMS
-						
-						// obtain context
-						
-						InitialContext ic = null;
-					      Connection jmsConnection = null;
-					      java.sql.Connection jdbcConnection = null;
 
-					      try {
-							try
-							  {
-							     // Step 1. Lookup the initial context
-							     ic = new InitialContext();
+			if (success) {
+				TransactionMessage transactionMessage = new TransactionMessage(
+						TransactionMessage.TYPE_CHARGE, posId, amount,
+						System.currentTimeMillis(), username, creditCardNumber);
+				// transmit to JMS
 
-							     // JMS operations
+				// obtain context
 
-							     // Step 2. Look up the XA Connection Factory
-							     ConnectionFactory cf = (ConnectionFactory)ic.lookup("java:/JmsXA");
+				InitialContext ic = null;
+				Connection jmsConnection = null;
+				java.sql.Connection jdbcConnection = null;
 
-							     // Step 3. Look up the Queue
-							     Queue queue = (Queue)ic.lookup("queue/test");
+				try {
+					try {
+						// Step 1. Lookup the initial context
+						ic = new InitialContext();
 
-							     // Step 4. Create a connection, a session and a message producer for the queue
-							     jmsConnection = cf.createConnection();
-							     Session session = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-							     MessageProducer messageProducer = session.createProducer(queue);
+						// JMS operations
 
-							     // Step 5. Create a Text Message
-							     ObjectMessage message = session.createObjectMessage(transactionMessage);
-							     // TextMessage message = session.createTextMessage("");
+						// Step 2. Look up the XA Connection Factory
+						ConnectionFactory cf = (ConnectionFactory) ic
+								.lookup("java:/JmsXA");
 
-							     // Step 6. Send The Text Message
-							     messageProducer.send(message);
-							     // TODO: log this
-							  }
-							  finally
-							  {
-							     // Step 12. Be sure to close all resources!
-							     if (ic != null)
-							     {
-							        ic.close();
-							     }
-							     if (jmsConnection != null)
-							     {
-							        jmsConnection.close();
-							     }
-							     if (jdbcConnection != null)
-							     {
-							        jdbcConnection.close();
-							     }
-							  }
-						} catch (NamingException e) {
-							throw new WebApplicationException(e);
-						} catch (JMSException e) {
-							throw new WebApplicationException(e);
-						} catch (SQLException e) {
-							throw new WebApplicationException(e);
+						// Step 3. Look up the Queue
+						Queue queue = (Queue) ic.lookup("queue/test");
+
+						// Step 4. Create a connection, a session and a message
+						// producer for the queue
+						jmsConnection = cf.createConnection();
+						Session session = jmsConnection.createSession(false,
+								Session.AUTO_ACKNOWLEDGE);
+						MessageProducer messageProducer = session
+								.createProducer(queue);
+
+						// Step 5. Create a Text Message
+						ObjectMessage message = session
+								.createObjectMessage(transactionMessage);
+						// TextMessage message = session.createTextMessage("");
+
+						// Step 6. Send The Text Message
+						messageProducer.send(message);
+						// TODO: log this
+					} finally {
+						// Step 12. Be sure to close all resources!
+						if (ic != null) {
+							ic.close();
 						}
-						
+						if (jmsConnection != null) {
+							jmsConnection.close();
+						}
+						if (jdbcConnection != null) {
+							jdbcConnection.close();
+						}
 					}
+				} catch (NamingException e) {
+					throw new WebApplicationException(e);
+				} catch (JMSException e) {
+					throw new WebApplicationException(e);
+				} catch (SQLException e) {
+					throw new WebApplicationException(e);
 				}
 
+			}
+		}
 
 		if (success) {
 			result = new String("SUCCESS");
@@ -258,7 +256,6 @@ public class FastCheck {
 		return result;
 	}
 
-	
 	@GET
 	public String getAllTransactions() {
 		return "Much has happened since you've started to participate in history.";
