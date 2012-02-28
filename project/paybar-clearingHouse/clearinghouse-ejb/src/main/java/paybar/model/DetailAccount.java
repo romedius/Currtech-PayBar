@@ -24,7 +24,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Table(
 		uniqueConstraints=@UniqueConstraint(columnNames = {"userName"})
 )
-@NamedQueries({ @NamedQuery(name = "getUserByName", query = "Select da FROM DetailAccount da WHERE da.userName = ?1") })
+@NamedQueries({ @NamedQuery(name = "getUserByName", query = "Select da FROM DetailAccount da WHERE da.userName = ?1"),
+				@NamedQuery(name = "getUserCount", query = "Select count(*) FROM DetailAccount da") 
+})
 public class DetailAccount implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -203,7 +205,5 @@ public class DetailAccount implements Serializable {
 	public void setSecurityKey(String securityKey) {
 		this.securityKey = securityKey;
 	}
-
-	
 
 }

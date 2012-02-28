@@ -1,6 +1,7 @@
 package paybar.webservlets;
 
 import java.io.IOException;
+import java.net.HttpRetryException;
 import java.util.Date;
 
 import javax.inject.Inject;
@@ -49,8 +50,15 @@ public class ChargeServlet extends HttpServlet {
 		if (request.getParameter("creditcard") != null
 				&& request.getParameter("amount") != null) {
 			try {
+				
+				/*
+				 * Create new transaction.
+				 */
+				
 				Double d = Double.parseDouble(request.getParameter("amount")) * 100;
 				long amount = d.longValue();
+				
+				
 				DetailAccount da = (DetailAccount) request.getSession()
 						.getAttribute("user");
 				Date now = new Date();
@@ -60,13 +68,24 @@ public class ChargeServlet extends HttpServlet {
 								+ request.getParameter("creditcard"),
 						Configuration.BankPosName.toString(), da.getUserName(),
 						now);
+				da.setCredit(dar.getUserByName(da.getUserName(), false)
+						.getCredit());
+						
+				
+				// the code above has been moved to FastCheck and DelayedTransactionProcessor
+				
+				// call fastcheck
+				// locate service and call it.
+				
+				
+				
+				// only send message of success after everything has been updated.
 				request.setAttribute("message",
 						"The Ammount has ben charged to your Account");
 				RequestDispatcher dispatcher = request
 						.getRequestDispatcher("charge.jsp");
 				dispatcher.forward(request, response);
-				da.setCredit(dar.getUserByName(da.getUserName(), false)
-						.getCredit());
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 				if (e.getCause() != null

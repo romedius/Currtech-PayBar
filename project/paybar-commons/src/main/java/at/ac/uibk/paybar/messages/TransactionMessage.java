@@ -4,48 +4,83 @@ import java.io.Serializable;
 
 public class TransactionMessage implements Serializable {
 
-
 	/**
-	 * 
+	 * Version number used by JVM for serialization purposes.
 	 */
 	private static final long serialVersionUID = 1L;
-	private long amount;
-	private String posId;
-	private String tanCode;
-	private long timestamp;
 
-	// additional verificaton information
-	private long preTransactionCredit;
+	/**
+	 * Designates loading money on to a user's account (putting money on to his
+	 * account from the credit card).
+	 */
+	public static final int TYPE_CHARGE = 1;
+
+	/**
+	 * Designates removing money from a user's account (sending the money to a
+	 * partner company, e.g. when the customer buys something at a pos).
+	 */
+	public static final int TYPE_TRANSACTION = -1;
+
+	/**
+	 * The amount to be transferred.
+	 */
+	private long amount;
+
+	/**
+	 * Account status as seen by FastCheck after the transaction has been
+	 * placed. Has definitely some problems with messages worked not in
+	 * sequence.
+	 */
 	private long pastTransactionCredit;
 
+	private String posOrBankId;
+
+	// additional verificaton information
+
+	/**
+	 * The tancode is the coupon's security code used as a security token for
+	 * the transaction of removing money from the account.
+	 */
+	private String tanCode;
+
+	/**
+	 * The timestamp holds the point of time the transaction when it has been
+	 * processed by FastCheck.
+	 */
+	private long timestamp;
+
+	/**
+	 * Type may be either {@link #TYPE_TRANSACTION} or {@value #TYPE_CHARGE}.
+	 * Designates the transaction's purpose of either loading money onto the
+	 * account or removing money from the account.
+	 */
+	private int type = 0;
+
+	/**
+	 * The username by which the user is known to the system.
+	 */
+	private String userName;
+
 	public TransactionMessage() {
-		
+
 	}
-	
-	public TransactionMessage(String tanCode, String posId, long amount,
-			long oldCredit, long newCredit, long timestamp) {
+
+	public TransactionMessage(int type, String posOrBankId, long amount,
+			long timestamp, String userName, String tanCode) {
+		this.type = type;
 		this.tanCode = tanCode;
-		this.posId = posId;
+		this.posOrBankId = posOrBankId;
 		this.amount = amount;
 		this.timestamp = timestamp;
-		this.preTransactionCredit = oldCredit;
-		this.pastTransactionCredit = newCredit;
+		this.userName = userName;
 	}
 
 	public long getAmount() {
 		return amount;
 	}
 
-	public long getPastTransactionCredit() {
-		return pastTransactionCredit;
-	}
-
-	public String getPosId() {
-		return posId;
-	}
-
-	public long getPreTransactionCredit() {
-		return preTransactionCredit;
+	public String getPosOrBankId() {
+		return posOrBankId;
 	}
 
 	public String getTanCode() {
@@ -56,20 +91,20 @@ public class TransactionMessage implements Serializable {
 		return timestamp;
 	}
 
+	public int getType() {
+		return type;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
 	public void setAmount(long amount) {
 		this.amount = amount;
 	}
 
-	public void setPastTransactionCredit(long pastTransactionCredit) {
-		this.pastTransactionCredit = pastTransactionCredit;
-	}
-
-	public void setPosId(String posId) {
-		this.posId = posId;
-	}
-
-	public void setPreTransactionCredit(long preTransactionCredit) {
-		this.preTransactionCredit = preTransactionCredit;
+	public void setPosOrBankId(String posOrBankId) {
+		this.posOrBankId = posOrBankId;
 	}
 
 	public void setTanCode(String tanCode) {
@@ -78,5 +113,13 @@ public class TransactionMessage implements Serializable {
 
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 }
