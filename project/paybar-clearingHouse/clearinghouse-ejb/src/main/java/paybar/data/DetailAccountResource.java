@@ -12,6 +12,9 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import at.ac.uibk.paybar.model.FastCoupon;
+import at.ac.uibk.paybar.model.TransferAccount;
+
 import paybar.model.Coupon;
 import paybar.model.DetailAccount;
 
@@ -136,5 +139,41 @@ public class DetailAccountResource {
 		result.setSecurityKey("");
 		regenerateCoupons(username);	
 	}
+	
+	public Integer getNumberOfAccounts(){
+		Query query = em.createNamedQuery("getUserCount");
+		Integer result = (Integer)query.getSingleResult();
+		return result;
+	}
+	
+	public List<TransferAccount> getAccounts(int first, int count){
+		Query query = em.createQuery("SELECT da FROM DetailAccount da");
+		query.setFirstResult(first);
+		query.setMaxResults(count);
+		@SuppressWarnings("unchecked")
+		List<DetailAccount> tmp = (List<DetailAccount>)query.getResultList();
+		
+		ArrayList<TransferAccount> result = new ArrayList<TransferAccount>();
+		for (DetailAccount detailAccount : tmp) {
+			TransferAccount trac = new TransferAccount();
+			trac.setId(detailAccount.getId());
+			trac.setCredit(detailAccount.getCredit());
+			ArrayList<FastCoupon> coupons= new ArrayList<FastCoupon>();
+			for (Coupon c : detailAccount.getCoupons()) {
+				FastCoupon tmpc = new FastCoupon();
+				tmpc.setId(c.getId());
+				tmpc.setCouponCode(c.getCouponCode());
+				tmpc.setLocationHash(c.getLocationHash());
+				tmpc.setUsedDate(c.getUsedDate());
+				tmpc.setValidFrom(c.getValidFrom());
+				tmpc.setValidUntil(c.getValidUntil());
+				coupons.add(tmpc);
+			}
+			trac.setCoupons(coupons);
+			result.add(trac);
+		}
+		return result;
+	}
+	
 
 }
