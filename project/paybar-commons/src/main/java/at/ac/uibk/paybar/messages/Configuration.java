@@ -1,4 +1,4 @@
-package at.ac.uibk.paybar;
+package at.ac.uibk.paybar.messages;
 
 public enum Configuration {
 	BankName("HyperBank"),

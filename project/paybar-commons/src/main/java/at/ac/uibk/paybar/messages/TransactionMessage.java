@@ -1,8 +1,9 @@
-package at.ac.uibk.paybar;
+package at.ac.uibk.paybar.messages;
 
 import java.io.Serializable;
 
 public class TransactionMessage implements Serializable {
+
 
 	/**
 	 * 

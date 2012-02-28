@@ -42,19 +42,15 @@ public class DetailAccountResource {
 		newDetailAccount.setLocationHash(locationhash);
 		newDetailAccount.setCredit(credit);
 		newDetailAccount.setSecurityKey(securityKey);
-		// newDetailAccount.setOldCoupons(new ArrayList<Coupon>()); // There are
-		// no
-		// used
-		// coupons
-		// on the
-		// Startup
 		em.persist(newDetailAccount);
 		em.flush();
+		regenerateCoupons(userName);
 	}
 
 	public void createNewDetailAccount(DetailAccount newDetailAccount) {
 		em.persist(newDetailAccount);
 		em.flush();
+		regenerateCoupons(newDetailAccount.getUserName());
 	}
 
 	public DetailAccount getUserByName(String name, boolean eager)
@@ -129,6 +125,16 @@ public class DetailAccountResource {
 		em.merge(result);
 		em.flush();
 
+	}
+
+	public void invalidateDevices(String username)
+	{
+		Query query = em.createNamedQuery("getUserByName");
+		query.setParameter(1, username);
+		DetailAccount result = (DetailAccount) query.getSingleResult();
+		result.getCoupons().clear();
+		result.setSecurityKey("");
+		regenerateCoupons(username);	
 	}
 
 }

@@ -24,8 +24,8 @@ import paybar.data.TransactionResource;
 import paybar.model.Coupon;
 import paybar.model.DetailAccount;
 import paybar.model.PointOfSale;
-import at.ac.uibk.paybar.Configuration;
 import at.ac.uibk.paybar.helpers.RN;
+import at.ac.uibk.paybar.messages.Configuration;
 
 /**
  * This can be used to fill the database with test data after startup.

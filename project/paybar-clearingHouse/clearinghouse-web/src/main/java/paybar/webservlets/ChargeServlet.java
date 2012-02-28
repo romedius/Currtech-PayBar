@@ -16,7 +16,7 @@ import paybar.data.PartnerResource;
 import paybar.data.PaybarResourceException;
 import paybar.data.TransactionResource;
 import paybar.model.DetailAccount;
-import at.ac.uibk.paybar.Configuration;
+import at.ac.uibk.paybar.messages.Configuration;
 
 @WebServlet(name = "ChargeServlet", urlPatterns = { "/cpanel/ChargeServlet" })
 public class ChargeServlet extends HttpServlet {

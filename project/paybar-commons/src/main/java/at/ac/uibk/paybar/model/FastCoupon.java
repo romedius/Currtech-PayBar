@@ -1,16 +1,12 @@
-package model;
+package at.ac.uibk.paybar.model;
 
 import java.io.Serializable;
 import java.util.Date;
+
+/**
+ * This Class is even Used for Transfer of the Coupons.
+ * */
 public class FastCoupon implements Serializable {
-
-	public FastAccount getFastAccount() {
-		return fastAccount;
-	}
-
-	public void setFastAccount(FastAccount fastAccount) {
-		this.fastAccount = fastAccount;
-	}
 
 	private static final long serialVersionUID = 1L;
 
@@ -26,8 +22,6 @@ public class FastCoupon implements Serializable {
 	
 	private String couponCode;
 	
-	private FastAccount fastAccount;
-
 	public long getId() {
 		return id;
 	}

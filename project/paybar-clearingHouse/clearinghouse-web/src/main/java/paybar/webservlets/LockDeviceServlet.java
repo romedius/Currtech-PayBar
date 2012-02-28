@@ -24,7 +24,6 @@ public class LockDeviceServlet extends HttpServlet {
 		DetailAccount da = (DetailAccount) request.getSession().getAttribute(
 				"user");
 		if (da != null) {
-
 				RequestDispatcher dispatcher = request
 						.getRequestDispatcher("");
 				dispatcher.forward(request, response);

@@ -37,7 +37,7 @@ public class DelayedTransactionProcessor implements MessageListener {
 		Connection connection = null;
 		try {
 			ObjectMessage textMessage = (ObjectMessage) message;
-			at.ac.uibk.paybar.TransactionMessage transactionMessage = (at.ac.uibk.paybar.TransactionMessage) textMessage
+			at.ac.uibk.paybar.messages.TransactionMessage transactionMessage = (at.ac.uibk.paybar.messages.TransactionMessage) textMessage
 					.getObject();
 
 			String text = "TransactionProcessor: posId: "

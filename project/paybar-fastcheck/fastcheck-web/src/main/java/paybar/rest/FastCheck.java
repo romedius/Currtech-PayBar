@@ -23,7 +23,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
-import at.ac.uibk.paybar.TransactionMessage;
+import at.ac.uibk.paybar.messages.TransactionMessage;
 
 
 /**
