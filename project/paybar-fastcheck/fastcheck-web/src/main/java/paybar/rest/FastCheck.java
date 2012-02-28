@@ -67,7 +67,7 @@ public class FastCheck {
 
 		// method needs @Form parameter with @POST
 		if (transactionRequest != null) {
-			String posId = transactionRequest.getPosId();
+			String posId = transactionRequest.getPosOrBankId();
 			long amount = transactionRequest.getAmount();
 			if (posId != null && VALID_POS_ID.equals(VALID_POS_ID)) { // TODO: Weiter
 				if (tanCode != null && VALID_TAN_CODE.equals(VALID_TAN_CODE)) {
@@ -77,9 +77,10 @@ public class FastCheck {
 					success = newCredit > 0.1d;
 
 					if (success) {
+						
+						// TODO: fetch username from cache
 						TransactionMessage transactionMessage = new TransactionMessage(
-								tanCode, posId, amount, oldCredit, newCredit,
-								System.currentTimeMillis());
+								TransactionMessage.TYPE_TRANSACTION, posId, amount, System.currentTimeMillis(), "dummy", tanCode);
 						// transmit to JMS
 						
 						// obtain context
@@ -109,27 +110,9 @@ public class FastCheck {
 
 							     // Step 5. Create a Text Message
 							     ObjectMessage message = session.createObjectMessage(transactionMessage);
-							     // TextMessage message = session.createTextMessage("");
-
-							     // Step 6. Send The Text Message
 							     messageProducer.send(message);
-							     // TODO: log this
-							     // System.out.println("Sent message: " + message.getText() + "(" + message.getJMSMessageID() + ")");
+							     
 
-							     /*
-							     PreparedStatement pr = jdbcConnection.prepareStatement("INSERT INTO " + SendMessageBean.TABLE +
-							                                                            " (id, text) VALUES ('" +
-							                                                            message.getJMSMessageID() +
-							                                                            "', '" +
-							                                                            text +
-							                                                            "');");
-
-							     // Step 10. execute the prepared statement
-							     pr.execute();
-
-							     // Step 11. close the prepared statement
-							     pr.close();
-							     */
 							  }
 							  finally
 							  {
@@ -171,6 +154,111 @@ public class FastCheck {
 		return result;
 	}
 
+	/**
+	 * At least the put works. Should probably exchanged by post with a
+	 * structure like this:
+	 * http://stackoverflow.com/questions/2637017/how-do-i-do
+	 * -a-multipart-form-file-upload-with-jax-rs
+	 * 
+	 * @param posId
+	 * @param tanCode
+	 * @param amount
+	 * @return
+	 * @throws NamingException 
+	 */
+	@POST
+	@Path("/charge/{username}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public String charge(@PathParam("username") String username,
+			TransactionRequest transactionRequest) {
+		String result = null;
+		boolean success = true;
+
+		// method needs @Form parameter with @POST
+		if (transactionRequest != null) {
+			String posId = transactionRequest.getPosOrBankId();
+			long amount = transactionRequest.getAmount();
+			
+					if (success) {
+						TransactionMessage transactionMessage = new TransactionMessage(
+								TransactionMessage.TYPE_CHARGE, posId, amount,
+								System.currentTimeMillis(), username, null);
+						// transmit to JMS
+						
+						// obtain context
+						
+						InitialContext ic = null;
+					      Connection jmsConnection = null;
+					      java.sql.Connection jdbcConnection = null;
+
+					      try {
+							try
+							  {
+							     // Step 1. Lookup the initial context
+							     ic = new InitialContext();
+
+							     // JMS operations
+
+							     // Step 2. Look up the XA Connection Factory
+							     ConnectionFactory cf = (ConnectionFactory)ic.lookup("java:/JmsXA");
+
+							     // Step 3. Look up the Queue
+							     Queue queue = (Queue)ic.lookup("queue/test");
+
+							     // Step 4. Create a connection, a session and a message producer for the queue
+							     jmsConnection = cf.createConnection();
+							     Session session = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+							     MessageProducer messageProducer = session.createProducer(queue);
+
+							     // Step 5. Create a Text Message
+							     ObjectMessage message = session.createObjectMessage(transactionMessage);
+							     // TextMessage message = session.createTextMessage("");
+
+							     // Step 6. Send The Text Message
+							     messageProducer.send(message);
+							     // TODO: log this
+							  }
+							  finally
+							  {
+							     // Step 12. Be sure to close all resources!
+							     if (ic != null)
+							     {
+							        ic.close();
+							     }
+							     if (jmsConnection != null)
+							     {
+							        jmsConnection.close();
+							     }
+							     if (jdbcConnection != null)
+							     {
+							        jdbcConnection.close();
+							     }
+							  }
+						} catch (NamingException e) {
+							throw new WebApplicationException(e);
+						} catch (JMSException e) {
+							throw new WebApplicationException(e);
+						} catch (SQLException e) {
+							throw new WebApplicationException(e);
+						}
+						
+					}
+				}
+
+
+		if (success) {
+			result = new String("SUCCESS");
+		} else {
+			// TODO: use ExceptionMapper here or create more detailed response
+			// status code
+			throw new WebApplicationException(404);
+		}
+
+		return result;
+	}
+
+	
 	@GET
 	public String getAllTransactions() {
 		return "Much has happened since you've started to participate in history.";
