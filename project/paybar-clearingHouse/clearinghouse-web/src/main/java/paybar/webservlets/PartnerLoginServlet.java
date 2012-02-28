@@ -14,7 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 import paybar.data.PartnerResource;
 import paybar.model.Partner;
 
-
+/**
+ * PartnerLoginServlet
+ * Login page for the Partner domain
+ */
 @WebServlet(name="PartnerLoginServlet",
 urlPatterns={"/cpanel/PartnerLoginServlet"}) 
 public class PartnerLoginServlet extends HttpServlet {
@@ -24,33 +27,21 @@ public class PartnerLoginServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public PartnerLoginServlet() {
-		super();
-	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		// check whether username and password are passed
 		if (request.getParameter("username") != null
 				&& request.getParameter("password") != null) {
 			try {
 				Partner p = pr.getPartnerByName(
 						request.getParameter("username"), false);
+				// check whether password and user match
 				if (p.getPassword().equals(request.getParameter("password"))) {
 					request.getSession().setAttribute("partner", p);
 					response.sendRedirect("main_company.jsp");
@@ -74,6 +65,10 @@ public class PartnerLoginServlet extends HttpServlet {
 						.getRequestDispatcher("login_company.jsp");
 				dispatcher.forward(request, response);
 			}
+		} else {
+			RequestDispatcher dispatcher = request
+					.getRequestDispatcher("login_company.jsp");
+			dispatcher.forward(request, response);
 		}
 	}
 

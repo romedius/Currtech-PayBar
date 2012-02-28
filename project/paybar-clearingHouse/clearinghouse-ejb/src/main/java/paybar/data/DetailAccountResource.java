@@ -12,6 +12,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import paybar.helper.GenerationHelpers;
+
 import at.ac.uibk.paybar.model.FastCoupon;
 import at.ac.uibk.paybar.model.TransferAccount;
 
@@ -27,13 +29,15 @@ public class DetailAccountResource {
 	@Inject
 	private CouponResource cr;
 
+	@Inject
+	private GenerationHelpers gh;
+
 	/**
 	 * creates a new Account
 	 */
 	public void createNewDetailAccount(String sureName, String firstName,
 			String userName, String password, String adress,
-			String phoneNumber, boolean active, String locationhash,
-			long credit, String securityKey) {
+			String phoneNumber, boolean active, String locationhash, long credit) {
 		DetailAccount newDetailAccount = new DetailAccount();
 		newDetailAccount.setAdress(adress);
 		newDetailAccount.setFirstName(firstName);
@@ -44,13 +48,14 @@ public class DetailAccountResource {
 		newDetailAccount.setActive(active);
 		newDetailAccount.setLocationHash(locationhash);
 		newDetailAccount.setCredit(credit);
-		newDetailAccount.setSecurityKey(securityKey);
+		newDetailAccount.setSecurityKey(gh.getNextSecurityKey());
 		em.persist(newDetailAccount);
 		em.flush();
 		regenerateCoupons(userName);
 	}
 
 	public void createNewDetailAccount(DetailAccount newDetailAccount) {
+		newDetailAccount.setSecurityKey(gh.getNextSecurityKey());
 		em.persist(newDetailAccount);
 		em.flush();
 		regenerateCoupons(newDetailAccount.getUserName());
@@ -130,35 +135,34 @@ public class DetailAccountResource {
 
 	}
 
-	public void invalidateDevices(String username)
-	{
+	public void invalidateDevices(String username) {
 		Query query = em.createNamedQuery("getUserByName");
 		query.setParameter(1, username);
 		DetailAccount result = (DetailAccount) query.getSingleResult();
 		result.getCoupons().clear();
-		result.setSecurityKey("");
-		regenerateCoupons(username);	
+		result.setSecurityKey(gh.getNextSecurityKey());
+		regenerateCoupons(username);
 	}
-	
-	public Integer getNumberOfAccounts(){
+
+	public Integer getNumberOfAccounts() {
 		Query query = em.createNamedQuery("getUserCount");
-		Integer result = (Integer)query.getSingleResult();
+		Integer result = (Integer) query.getSingleResult();
 		return result;
 	}
-	
-	public List<TransferAccount> getAccounts(int first, int count){
+
+	public List<TransferAccount> getAccounts(int first, int count) {
 		Query query = em.createQuery("SELECT da FROM DetailAccount da");
 		query.setFirstResult(first);
 		query.setMaxResults(count);
 		@SuppressWarnings("unchecked")
-		List<DetailAccount> tmp = (List<DetailAccount>)query.getResultList();
-		
+		List<DetailAccount> tmp = (List<DetailAccount>) query.getResultList();
+
 		ArrayList<TransferAccount> result = new ArrayList<TransferAccount>();
 		for (DetailAccount detailAccount : tmp) {
 			TransferAccount trac = new TransferAccount();
 			trac.setId(detailAccount.getId());
 			trac.setCredit(detailAccount.getCredit());
-			ArrayList<FastCoupon> coupons= new ArrayList<FastCoupon>();
+			ArrayList<FastCoupon> coupons = new ArrayList<FastCoupon>();
 			for (Coupon c : detailAccount.getCoupons()) {
 				FastCoupon tmpc = new FastCoupon();
 				tmpc.setId(c.getId());
@@ -174,6 +178,4 @@ public class DetailAccountResource {
 		}
 		return result;
 	}
-	
-
 }

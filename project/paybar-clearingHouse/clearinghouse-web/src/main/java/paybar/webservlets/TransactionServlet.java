@@ -16,6 +16,9 @@ import paybar.model.Transaction;
 
 /**
  * Servlet implementation class TransactionServlet
+ * This Controller Servlet prepares all transactions
+ * that are done by the user.
+ * 
  */
 
 public class TransactionServlet extends HttpServlet {
@@ -28,14 +31,16 @@ public class TransactionServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		DetailAccount da = (DetailAccount) request.getSession().getAttribute(
 				"user");
+		// check if user is logged in
 		if (da != null) {
-				List<Transaction> transactionList = trr
-						.getTransactionsByUsername(da.getUserName());
+			// get transactions from the user
+			List<Transaction> transactionList = trr
+					.getTransactionsByUsername(da.getUserName());
 
-				request.setAttribute("transactions", transactionList);
-				RequestDispatcher dispatcher = request
-						.getRequestDispatcher("transactions.jsp");
-				dispatcher.forward(request, response);
+			request.setAttribute("transactions", transactionList);
+			RequestDispatcher dispatcher = request
+					.getRequestDispatcher("transactions.jsp");
+			dispatcher.forward(request, response);
 		} else {
 			request.getSession().invalidate();
 			response.sendRedirect("index.jsp");

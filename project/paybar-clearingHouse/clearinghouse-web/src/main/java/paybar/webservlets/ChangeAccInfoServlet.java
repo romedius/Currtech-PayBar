@@ -13,6 +13,14 @@ import javax.servlet.http.HttpServletResponse;
 import paybar.data.DetailAccountResource;
 import paybar.model.DetailAccount;
 
+/**
+ * ChangeAccInfoServlet
+ * Servlet responsible for changing the detail account 
+ * data of a user. It receives the new data from a form.
+ * First it will load the actual Detail account object of
+ * the user and then override with the new parameters.
+ */
+
 @WebServlet(name = "ChangeAccInfoServlet", urlPatterns = { "/cpanel/ChangeAccInfoServlet" })
 public class ChangeAccInfoServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -28,17 +36,21 @@ public class ChangeAccInfoServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		DetailAccount da = (DetailAccount) request.getSession().getAttribute(
 				"user");
+		// check whether user is logged in and parameters are passed
 		if (da != null && request.getParameter("firstname") != null
 				&& request.getParameter("surename") != null
 				&& request.getParameter("address") != null) {
+			
+			// read out new parameters
 			String firstname = request.getParameter("firstname");
 			String surename = request.getParameter("surename");
 			String address = request.getParameter("address");
 			String phoneNumber = request.getParameter("phoneNumber");
 			
 			try {
+				// get old account object
 				DetailAccount daNew = dar.getUserByName(da.getUserName(), false);
-				daNew = dar.getUserByName(da.getUserName(), false);
+				// check if password has also to be changed
 				if (request.getParameter("password1") != null
 						&& !request.getParameter("password1").equals("")
 						&& request.getParameter("password2") != null
@@ -54,32 +66,33 @@ public class ChangeAccInfoServlet extends HttpServlet {
 						daNew.setPassword(request.getParameter("password1"));
 					
 					} else {
+						// password not equal, is also proved by Javascript client side
 						request.setAttribute("error", "Password not equal");
 						RequestDispatcher dispatcher = request
 								.getRequestDispatcher("changeAccInfo.jsp");
 						dispatcher.forward(request, response);
 					}
+				// if password don't has to be changed it is ""
 				} else if (request.getParameter("password1") != null
 						&& request.getParameter("password1").equals("")
 						&& request.getParameter("password2") != null
 						&& request.getParameter("password2").equals("")) {
-					// todo
+
 					// change Account data without password
 					daNew.setFirstName(firstname);
 					daNew.setSureName(surename);
 					daNew.setAdress(address);
 					daNew.setPhoneNumber(phoneNumber);
-					
-					// if successfully written also change data in session
-					// object
 
 				} else {
+					// some unsopported case, something is wrong with parameters
 					request.setAttribute("error",
 							"Not right parameters or password does not match");
 					RequestDispatcher dispatcher = request
 							.getRequestDispatcher("changeAccInfo.jsp");
 					dispatcher.forward(request, response);
 				}
+				// update the parameters persistently
 				dar.updateDetailAccount(daNew);
 				response.sendRedirect("AccountOverviewServlet");
 				
@@ -95,6 +108,7 @@ public class ChangeAccInfoServlet extends HttpServlet {
 			}
 
 		} else {
+			// user not logged in
 			request.getSession().invalidate();
 			response.sendRedirect("index.jsp");
 		}

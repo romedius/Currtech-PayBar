@@ -24,6 +24,13 @@ import paybar.model.Transaction;
 import at.ac.uibk.paybar.messages.Configuration;
 import at.ac.uibk.paybar.messages.TransactionRequest;
 
+/**
+ * ChargeServlet
+ * Servlet responsible for charging the credit of
+ * a user.
+ * 
+ */
+
 @WebServlet(name = "ChargeServlet", urlPatterns = { "/cpanel/ChargeServlet" })
 public class ChargeServlet extends HttpServlet {
 
@@ -38,26 +45,11 @@ public class ChargeServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public ChargeServlet() {
-		super();
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String creditCardNumber = request.getParameter("creditcard");
