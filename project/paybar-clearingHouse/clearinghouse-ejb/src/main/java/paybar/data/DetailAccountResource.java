@@ -164,14 +164,7 @@ public class DetailAccountResource {
 			trac.setCredit(detailAccount.getCredit());
 			ArrayList<FastCoupon> coupons = new ArrayList<FastCoupon>();
 			for (Coupon c : detailAccount.getCoupons()) {
-				FastCoupon tmpc = new FastCoupon();
-				tmpc.setId(c.getId());
-				tmpc.setCouponCode(c.getCouponCode());
-				tmpc.setLocationHash(c.getLocationHash());
-				tmpc.setUsedDate(c.getUsedDate());
-				tmpc.setValidFrom(c.getValidFrom());
-				tmpc.setValidUntil(c.getValidUntil());
-				coupons.add(tmpc);
+				coupons.add(c.getFastCoupon());
 			}
 			trac.setCoupons(coupons);
 			result.add(trac);

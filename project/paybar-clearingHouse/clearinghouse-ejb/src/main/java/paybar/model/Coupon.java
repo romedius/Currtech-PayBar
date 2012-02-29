@@ -15,6 +15,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import at.ac.uibk.paybar.model.FastCoupon;
+
 @Entity
 @XmlRootElement
 @NamedQueries({
@@ -132,5 +134,16 @@ public class Coupon implements Serializable {
 
 	public void setCouponCode(String couponCode) {
 		this.couponCode = couponCode;
+	}
+	
+	public FastCoupon getFastCoupon(){
+		FastCoupon fc = new FastCoupon();
+		fc.setId(id);
+		fc.setLocationHash(locationHash);
+		fc.setUsedDate(usedDate);
+		fc.setValidFrom(validFrom);
+		fc.setValidUntil(validUntil);
+		fc.setCouponCode(couponCode);
+		return fc;
 	}
 }

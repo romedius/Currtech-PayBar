@@ -16,9 +16,8 @@ import at.ac.uibk.paybar.messages.MetadataMessage;
 import at.ac.uibk.paybar.model.TransferAccount;
 
 /**
- * This can be used to fill the database with test data after startup.
- * 
- * @author alle ;-)
+ * This Interface is used by the fastcheck service to preload the userdata on
+ * startup.
  * 
  */
 @Path("/fastcheckInterface")
@@ -27,7 +26,7 @@ public class FastcheckInterface {
 
 	@Inject
 	Logger log;
-	
+
 	@Inject
 	private DetailAccountResource dar;
 

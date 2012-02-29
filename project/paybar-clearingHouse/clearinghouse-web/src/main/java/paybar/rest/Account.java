@@ -20,10 +20,15 @@ import javax.ws.rs.core.Response;
 import paybar.data.DetailAccountResource;
 import paybar.data.ModelToWebserviceTransformer;
 import paybar.data.TransactionResource;
-import paybar.helper.GenerationHelpers;
 import paybar.model.DetailAccount;
 import paybar.model.Transaction;
 import paybar.wsmodel.WsTransaction;
+
+/**
+ * This Webservice provides the functionalities needed for the User Interface to
+ * query results asynchronously
+ * 
+ * */
 
 @Path("/account")
 @RequestScoped
@@ -40,7 +45,6 @@ public class Account {
 
 	@Inject
 	private ModelToWebserviceTransformer mtwt;
-
 
 	@POST
 	@Path("/create")
