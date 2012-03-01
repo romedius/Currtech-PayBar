@@ -52,10 +52,16 @@ public class Account {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ReturnMessage createAccount(DetailAccount da) {
 		log.info("create ACOUNT");
-		dar.createNewDetailAccount(da);
-		ReturnMessage rm = new ReturnMessage(ReturnMessageEnum.SUCCESS,
+		try {
+			dar.createNewDetailAccount(da);
+			ReturnMessage rm = new ReturnMessage(ReturnMessageEnum.SUCCESS,
 				ReturnMessageEnum.SUCCESS.toString());
-		return rm;
+			return rm;
+		} catch (Exception e) {
+			ReturnMessage rm = new ReturnMessage(ReturnMessageEnum.FAILURE,
+				ReturnMessageEnum.FAILURE.toString());
+			return rm;
+		}
 	}
 
 	@GET
