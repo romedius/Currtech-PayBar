@@ -97,6 +97,14 @@
       	<groupId>at.ac.uibk.paybar</groupId>
       	<artifactId>paybar-commons</artifactId>
       </dependency>
+      
+
+      <dependency>
+      	<groupId>org.jboss.as</groupId>
+      	<artifactId>jboss-as-clustering-infinispan</artifactId>
+      	<version>7.1.0.CR1b</version>
+      	<scope>provided</scope>
+      </dependency>
 	</dependencies>
 
 	<build>

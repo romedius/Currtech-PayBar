@@ -2,6 +2,7 @@ package paybar.rest;
 
 import java.sql.SQLException;
 
+import javax.annotation.Resource;
 import javax.enterprise.context.RequestScoped;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -21,8 +22,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
+import org.infinispan.Cache;
+import org.infinispan.manager.CacheContainer;
+import org.infinispan.manager.CacheManager;
+
+import paybar.junit.CouponAfterRegisterTest;
+
 import at.ac.uibk.paybar.messages.TransactionMessage;
 import at.ac.uibk.paybar.messages.TransactionRequest;
+import at.ac.uibk.paybar.model.FastCoupon;
 
 /**
  * FastCheck is responsible for authorizing a transaction. This includes account
@@ -41,6 +49,9 @@ public class FastCheck {
 	public static final String VALID_POS_ID = "1060";
 	public static final String VALID_TAN_CODE = "21";
 	public static final long CREDIT = 100000;
+	
+	@Resource(name="java:jboss/infinispan/fastcheck")
+	CacheContainer cacheContainter;
 
 	/**
 	 * At least the put works. Should probably exchanged by post with a
@@ -259,6 +270,13 @@ public class FastCheck {
 	@GET
 	public String getAllTransactions() {
 		return "Much has happened since you've started to participate in history.";
+	}
+	
+	private void initCaches() {
+		Cache<String, FastCoupon> couponCache = this.cacheContainter.getCache("coupons");
+		
+		
+		
 	}
 
 }
