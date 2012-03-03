@@ -214,6 +214,11 @@
 		    <transactionMode>TRANSACTIONAL</transactionMode> <!-- we do want to have an always fail-safe cache -->
 		    <lockingMode>OPTIMISTIC</lockingMode> <!-- OPTIMISTIC locking because of few write events on the same data -->
                 </local-cache>
+		<local-cache name="accounts">
+                    <eviction strategy="NONE"/> <!-- always hold all coupons -->
+		    <transactionMode>TRANSACTIONAL</transactionMode> <!-- we do want to have an always fail-safe cache -->
+		    <lockingMode>OPTIMISTIC</lockingMode> <!-- OPTIMISTIC locking because of few write events on the same data -->
+                </local-cache>
 <!--
                 <replicated-cache name="repl" mode="ASYNC" batching="true">
                     <file-store/>
