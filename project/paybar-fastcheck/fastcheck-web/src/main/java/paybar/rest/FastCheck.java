@@ -1,9 +1,15 @@
 package paybar.rest;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -13,6 +19,7 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.transaction.Transaction;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -25,12 +32,18 @@ import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 import org.infinispan.manager.CacheManager;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 
 import paybar.junit.CouponAfterRegisterTest;
 
+import at.ac.uibk.paybar.messages.Configuration;
+import at.ac.uibk.paybar.messages.MetadataMessage;
 import at.ac.uibk.paybar.messages.TransactionMessage;
 import at.ac.uibk.paybar.messages.TransactionRequest;
+import at.ac.uibk.paybar.model.FastAccount;
 import at.ac.uibk.paybar.model.FastCoupon;
+import at.ac.uibk.paybar.model.TransferAccount;
 
 /**
  * FastCheck is responsible for authorizing a transaction. This includes account
@@ -46,12 +59,17 @@ import at.ac.uibk.paybar.model.FastCoupon;
 @RequestScoped
 public class FastCheck {
 
+	private static final int BATCH_SIZE = 10000;
 	public static final String VALID_POS_ID = "1060";
 	public static final String VALID_TAN_CODE = "21";
 	public static final long CREDIT = 100000;
-	
-	@Resource(name="java:jboss/infinispan/fastcheck")
-	CacheContainer cacheContainter;
+	public static final String FASTCHECK_JNDI_NAME = "java:jboss/infinispan/fastcheck";
+
+	@Inject
+	private Logger log;
+
+	// @Resource(lookup = "java:jboss/infinispan/fastcheck")
+	// CacheContainer cacheContainer;
 
 	/**
 	 * At least the put works. Should probably exchanged by post with a
@@ -268,15 +286,129 @@ public class FastCheck {
 	}
 
 	@GET
-	public String getAllTransactions() {
-		return "Much has happened since you've started to participate in history.";
+	public String initWebService() {
+		boolean result = initCaches();
+		return result ? "SUCCESS" : "FAILURE";
 	}
-	
-	private void initCaches() {
-		Cache<String, FastCoupon> couponCache = this.cacheContainter.getCache("coupons");
-		
-		
-		
+
+	/**
+	 * Fetch the data for the cache... Do a full initialization. Maybe a
+	 * "kernel" could do this in a more centralized way...
+	 */
+	private boolean initCaches() {
+		boolean result = false;
+
+		try {
+			InitialContext ic = new InitialContext();
+			CacheContainer cacheContainer = (CacheContainer) ic
+					.lookup(FASTCHECK_JNDI_NAME);
+			Cache<String, Long> couponCache = cacheContainer
+					.getCache("coupons");
+			Cache<Long, FastAccount> accountCache = cacheContainer
+					.getCache("accounts");
+
+			couponCache.getAdvancedCache().getTransactionManager().begin();
+			// empty the cache
+			couponCache.clear();
+
+			accountCache.getAdvancedCache().getTransactionManager().begin();
+
+			// empty the cache
+			accountCache.clear();
+			// now we will fill the whole cache
+
+			/*
+			 * Fetch data from the clearing house
+			 */
+
+			// fetch all data from the clearing house...
+			int numberAccountsUnread = 0;
+			ClientRequest clientRequest = new ClientRequest(
+					"http://localhost:8080/clearinghouse/fastcheckInterface/metaData");
+			clientRequest.accept("application/json");
+			/*
+			 * clientRequest .body("application/json", new
+			 * TransactionRequest(amount,
+			 * Configuration.BankPosName.toString()));
+			 */
+
+			ClientResponse<MetadataMessage> fastcheckResponse = clientRequest
+					.get();
+
+			MetadataMessage mm = fastcheckResponse
+					.getEntity(MetadataMessage.class);
+
+			numberAccountsUnread = mm.getNoOfAccounts();
+
+			int currentAccountIndex = 0;
+
+			int numberAccountsRequested = 0;
+
+			if (numberAccountsUnread > BATCH_SIZE) {
+				numberAccountsRequested = BATCH_SIZE;
+			} else {
+				numberAccountsRequested = numberAccountsUnread;
+			}
+
+			while (numberAccountsUnread > 0) {
+				clientRequest = new ClientRequest(
+						"http://localhost:8080/clearinghouse/fastcheckInterface/accountBatch/"
+								+ currentAccountIndex + "/"
+								+ numberAccountsRequested);
+				clientRequest.accept("application/json");
+
+				ClientResponse<List<TransferAccount>> response = clientRequest
+						.get();
+
+				List<TransferAccount> batch = response.getEntity();
+
+				for (TransferAccount transferAccount : batch) {
+					ArrayList<FastCoupon> fastCoupons = transferAccount
+							.getCoupons();
+					FastAccount fastAccount = new FastAccount();
+
+					/*
+					 * Fast index for every coupon that is added to the
+					 * system... every coupon has a unique code that links to
+					 * its user
+					 */
+					for (FastCoupon fastCoupon : fastCoupons) {
+						couponCache.put(fastCoupon.getCouponCode(), new Long(
+								fastAccount.getId()));
+					}
+
+					fastAccount.addFastCoupons(fastCoupons);
+					accountCache
+							.put(new Long(fastAccount.getId()), fastAccount);
+				}
+
+				if (batch.size() < numberAccountsRequested) {
+					// there has been some change in the available accounts
+					// number... stop fetching accounts now.
+					numberAccountsUnread = 0;
+				} else {
+					numberAccountsUnread -= numberAccountsRequested;
+				}
+			}
+
+			/*
+			 * Commit the newly initialized caches.
+			 */
+
+			accountCache.getAdvancedCache().getTransactionManager().commit();
+			couponCache.getAdvancedCache().getTransactionManager().commit();
+
+			result = true;
+
+		} catch (NamingException e) {
+			// TODO: logging
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 
 }

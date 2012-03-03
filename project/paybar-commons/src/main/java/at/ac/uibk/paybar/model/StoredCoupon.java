@@ -1,5 +1,6 @@
 package at.ac.uibk.paybar.model;
 
+
 public class StoredCoupon extends FastCoupon {
 	
 	private static final long serialVersionUID = 1L;
