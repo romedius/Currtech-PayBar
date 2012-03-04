@@ -69,7 +69,7 @@ public class SetupDatabase {
 	 * @return
 	 * @throws NamingException
 	 */
-	@GET
+	@PUT
 	@Path("/database")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String setup() {
