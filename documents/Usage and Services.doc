@@ -1,0 +1,26 @@
+﻿Usage and Interfaces to other Systems and for future extensions
+Content
+Usage and Interfaces to other Systems and for future extensions	1
+User Interface Components	1
+Setup Interface	1
+Interface for users	1
+Interface for Partners and Companies	1
+Rest Webservice Interfaces for external usage	1
+Webservices for Mobile Clients	1
+Webservices for points of sales(POS)	1
+
+
+User Interface Components
+Setup Interface
+For an initial setup of the database and to add some needed Informations there is an Webservice you can call over an AJAX enabled page on http://localhost:8080/clearinghouse/service.html
+This Service returns  “Result: SUCCESS” if the Setup Method works.
+Otherwise it returns the Stacktrace of the produced exception.
+Interface for users
+Under the URL http://localhost:8080/clearinghouse/cpanel/ users can find the Login screen for the User Management Interface. On the bottom there is a Link to the Interface for partners and companies described in the next section.
+
+Interface for Partners and Companies
+
+Rest Webservice Interfaces for external usage
+Webservices for Mobile Clients
+Webservices for points of sales(POS)
+
