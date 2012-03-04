@@ -63,7 +63,7 @@ public class FastCheck {
 	public static final String VALID_POS_ID = "1060";
 	public static final String VALID_TAN_CODE = "21";
 	public static final long CREDIT = 100000;
-	public static final String FASTCHECK_JNDI_NAME = "java:jboss/infinispan/fastcheck";
+	public static final String FASTCHECK_JNDI_NAME = "java:jboss/infinispan/container/fastcheck";
 
 	@Inject
 	private Logger log;

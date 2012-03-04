@@ -95,20 +95,14 @@
       
 
       <dependency>
-      	<groupId>org.jboss.as</groupId>
-      	<artifactId>jboss-as-clustering-infinispan</artifactId>
-      	<version>7.1.0.Final</version>
-      	<scope>provided</scope>
-      </dependency>
-      <dependency>
       	<groupId>org.jboss.spec.javax.annotation</groupId>
       	<artifactId>jboss-annotations-api_1.1_spec</artifactId>
       </dependency>
+      
       <dependency>
-      	<groupId>org.jboss.as</groupId>
-      	<artifactId>jboss-as-jaxrs</artifactId>
-      	<version>7.1.0.Final</version>
-      	<scope>provided</scope>
+      	<groupId>org.infinispan</groupId>
+      	<artifactId>infinispan-core</artifactId>
+      	<version>5.1.1.FINAL</version>
       </dependency>
 	</dependencies>
 
@@ -124,5 +118,48 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	   <profiles>
+      <profile>
+         <id>jboss-public-repository</id>
+         <activation>
+            <property>
+               <name>jboss-public-repository</name>
+               <value>!false</value>
+            </property>
+         </activation>
+         <repositories>
+            <repository>
+               <id>jboss-public-repository-group</id>
+               <name>JBoss Public Maven Repository Group</name>
+               <url>http://repository.jboss.org/nexus/content/groups/public</url>
+               <releases>
+                  <enabled>true</enabled>
+                  <updatePolicy>never</updatePolicy>
+               </releases>
+               <snapshots>
+                  <enabled>true</enabled>
+                  <updatePolicy>never</updatePolicy>
+               </snapshots>
+            </repository>
+         </repositories>
+         <pluginRepositories>
+            <pluginRepository>
+               <id>jboss-public-repository-group</id>
+               <name>JBoss Public Maven Repository Group</name>
+               <url>http://repository.jboss.org/nexus/content/groups/public</url>
+               <releases>
+                  <enabled>true</enabled>
+                  <updatePolicy>never</updatePolicy>
+               </releases>
+               <snapshots>
+                  <enabled>false</enabled>
+                  <updatePolicy>never</updatePolicy>
+               </snapshots>
+            </pluginRepository>
+         </pluginRepositories>
+      </profile>
+
+   </profiles>
 
 </project>
