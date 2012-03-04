@@ -20,6 +20,7 @@ import javax.jms.Session;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -29,6 +30,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
+import org.infinispan.AdvancedCache;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 import org.infinispan.manager.CacheManager;
@@ -307,11 +309,14 @@ public class FastCheck {
 			Cache<Long, FastAccount> accountCache = cacheContainer
 					.getCache("accounts");
 
-			couponCache.getAdvancedCache().getTransactionManager().begin();
 			// empty the cache
 			couponCache.clear();
 
-			accountCache.getAdvancedCache().getTransactionManager().begin();
+			AdvancedCache<Long, FastAccount> advancedCache = accountCache
+					.getAdvancedCache();
+			TransactionManager transactionManager = advancedCache
+					.getTransactionManager();
+			transactionManager.begin();
 
 			// empty the cache
 			accountCache.clear();
@@ -396,7 +401,7 @@ public class FastCheck {
 			 */
 
 			accountCache.getAdvancedCache().getTransactionManager().commit();
-			couponCache.getAdvancedCache().getTransactionManager().commit();
+			// couponCache.getAdvancedCache().getTransactionManager().commit();
 
 			result = true;
 
