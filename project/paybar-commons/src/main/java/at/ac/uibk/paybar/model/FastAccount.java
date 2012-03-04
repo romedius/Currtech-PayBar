@@ -4,15 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.infinispan.container.versioning.EntryVersion;
-import org.infinispan.container.versioning.InequalVersionComparisonResult;
-import org.jboss.as.controller.registry.OperationEntry.EntryType;
 
 /**
  * This Class is even Used for Storage of Accounts. Do not forget to increase
  * version after doing your changes.
  * */
-public class FastAccount implements Serializable, EntryVersion {
+public class FastAccount implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -52,6 +49,7 @@ public class FastAccount implements Serializable, EntryVersion {
 		this.version++;
 	}
 
+	/*
 	public InequalVersionComparisonResult compareTo(EntryVersion arg0) {
 		InequalVersionComparisonResult result = null;
 		if (arg0 instanceof FastAccount) {
@@ -73,6 +71,7 @@ public class FastAccount implements Serializable, EntryVersion {
 
 		return result;
 	}
+	*/
 
 	public void addFastCoupons(ArrayList<FastCoupon> fastCoupons2) {
 		// TODO Auto-generated method stub

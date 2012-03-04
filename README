@@ -1,7 +1,9 @@
 Following steps are necessary for development:
 
 JBOSS AS 7:
-http://download.jboss.org/jbossas/7.1/jboss-as-7.1.0.CR1b/jboss-as-7.1.0.CR1b.zip
+http://download.jboss.org/jbossas/7.1/jboss-as-7.1.0.Final/jboss-as-7.1.0.Final.tar.gz
+or
+http://download.jboss.org/jbossas/7.1/jboss-as-7.1.0.Final/jboss-as-7.1.0.Final.zip
 
 Getting Started Instructions:
 https://docs.jboss.org/author/display/AS7/Getting+Started+Developing+Applications+Guide
