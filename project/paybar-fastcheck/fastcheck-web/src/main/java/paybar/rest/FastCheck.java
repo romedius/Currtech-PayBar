@@ -84,14 +84,11 @@ public class FastCheck {
 	// CacheContainer cacheContainer;
 
 	/**
-	 * At least the put works. Should probably exchanged by post with a
-	 * structure like this:
-	 * http://stackoverflow.com/questions/2637017/how-do-i-do
-	 * -a-multipart-form-file-upload-with-jax-rs
+	 * This method provides the central transaction authorization method.
 	 * 
-	 * @param posId
-	 * @param tanCode
-	 * @param amount
+	 * @param posId Point of Sale
+	 * @param tanCode coupon code
+	 * @param amount amount to be deducted, positive long
 	 * @return
 	 * @throws NamingException
 	 */
@@ -290,14 +287,12 @@ public class FastCheck {
 	}
 
 	/**
-	 * At least the put works. Should probably exchanged by post with a
-	 * structure like this:
-	 * http://stackoverflow.com/questions/2637017/how-do-i-do
-	 * -a-multipart-form-file-upload-with-jax-rs
+	 * This method allows putting money on to a user's account.
 	 * 
-	 * @param posId
-	 * @param tanCode
-	 * @param amount
+	 * @param posId This time it is the source financial institute
+	 * @param tanCode Used for storing credit card details
+	 * @param amount amount to be charged on to the users account
+	 * @param username the username of the account to be charged
 	 * @return
 	 * @throws NamingException
 	 */
@@ -305,7 +300,7 @@ public class FastCheck {
 	@Path("/charge/{username}/{creditCardNumber}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public String charge(@PathParam("username") String username,
+	public String charge(@PathParam("username") Long username,
 			@PathParam("creditCardNumber") String creditCardNumber,
 			TransactionRequest transactionRequest) {
 		String result = null;
@@ -319,7 +314,7 @@ public class FastCheck {
 			if (success) {
 				TransactionMessage transactionMessage = new TransactionMessage(
 						TransactionMessage.TYPE_CHARGE, posId, amount,
-						System.currentTimeMillis(), username, creditCardNumber);
+						System.currentTimeMillis(), username.toString(), creditCardNumber);
 				// transmit to JMS
 
 				// obtain context

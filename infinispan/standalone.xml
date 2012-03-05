@@ -196,6 +196,7 @@
             </cache-container>
             <cache-container name="fastcheck" default-cache="accounts" start="EAGER">
                 <local-cache name="accounts">
+                    <locking isolation="REPEATABLE_READ"/>
                     <transaction mode="NON_XA"/>
                 </local-cache>
                 <local-cache name="coupons">
