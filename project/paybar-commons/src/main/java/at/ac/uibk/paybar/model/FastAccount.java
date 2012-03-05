@@ -37,7 +37,7 @@ public class FastAccount implements Serializable {
 		this.id = id;
 	}
 
-	public float getCredit() {
+	public long getCredit() {
 		return credit;
 	}
 
@@ -74,8 +74,17 @@ public class FastAccount implements Serializable {
 	*/
 
 	public void addFastCoupons(ArrayList<FastCoupon> fastCoupons2) {
-		// TODO Auto-generated method stub
-
+		if(this.fastCoupons == null) {
+			this.fastCoupons = new HashMap<String, FastCoupon>();
+		}
+		for (FastCoupon fastCoupon : fastCoupons2) {
+			this.fastCoupons.put(fastCoupon.getCouponCode(), fastCoupon);	
+		}
 	}
 
+	public void removeCoupon(String tanCode) {
+		if(fastCoupons != null) {
+			fastCoupons.remove(tanCode);
+		}
+	}
 }

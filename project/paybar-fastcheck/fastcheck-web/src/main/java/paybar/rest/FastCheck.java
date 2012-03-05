@@ -19,6 +19,11 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
@@ -96,94 +101,189 @@ public class FastCheck {
 	@Produces(MediaType.APPLICATION_JSON)
 	public String transaction(@PathParam("tanCode") String tanCode,
 			TransactionRequest transactionRequest) {
-		String result = null;
+		String result = "FAILURE";
 		boolean success = true;
+		InitialContext ic = null;
+		Connection jmsConnection = null;
+		boolean openTransaction = false;
+		WebApplicationException exceptionToThrow = null;
+		TransactionManager accountTransactionManager = null;
 
 		// method needs @Form parameter with @POST
 		if (transactionRequest != null) {
 			String posId = transactionRequest.getPosOrBankId();
 			long amount = transactionRequest.getAmount();
-			if (posId != null && VALID_POS_ID.equals(VALID_POS_ID)) { // TODO:
-																		// Weiter
-				if (tanCode != null && VALID_TAN_CODE.equals(VALID_TAN_CODE)) {
+
+			// fetch the account for the request
+			try {
+				ic = new InitialContext();
+				CacheContainer cacheContainer = (CacheContainer) ic
+						.lookup(FASTCHECK_JNDI_NAME);
+
+				Cache<String, Long> couponCache = cacheContainer
+						.getCache("coupons");
+
+				Long accountId = couponCache.get(tanCode);
+
+				if (accountId != null) {
+
+					// fetch the account, open a transaction
+					Cache<Long, FastAccount> accountCache = cacheContainer
+							.getCache("accounts");
+					AdvancedCache<Long, FastAccount> advancedCache = accountCache
+							.getAdvancedCache();
+					accountTransactionManager = advancedCache
+							.getTransactionManager();
+					accountTransactionManager.begin();
+					openTransaction = true;
+
+					// try to find the account
+					boolean gotLock = advancedCache.lock(accountId);
+					int tries = 10;
+
+					while (!gotLock && tries > 0) {
+						tries--;
+						gotLock = advancedCache.lock(accountId);
+					}
+
+					// if we still do not have a lock, exit by exception
+					if (!gotLock) {
+						// maybe there is no such key
+						// but this should not be
+						// TODO: check for existence of key
+
+						// bail out with a overloaded exception... the cache is
+						// not responding currently
+						exceptionToThrow = new WebApplicationException(503);
+					}
+
+					FastAccount fastAccount = advancedCache.get(accountId);
+
+					if (fastAccount == null) {
+						// bail out with an exception of 404 because we do not
+						// have such an account
+						exceptionToThrow = new WebApplicationException(404);
+					}
+
 					// see if account has enough credit
-					long oldCredit = CREDIT;
-					long newCredit = CREDIT - amount;
-					success = newCredit > 0.1d;
+					// TODO: should check for overflows and other validation of
+					// limits
+					long oldCredit = fastAccount.getCredit();
+					long newCredit = oldCredit - amount;
+					success = newCredit > 0;
 
 					if (success) {
-
 						// TODO: fetch username from cache
 						TransactionMessage transactionMessage = new TransactionMessage(
 								TransactionMessage.TYPE_TRANSACTION, posId,
-								amount, System.currentTimeMillis(), "dummy",
-								tanCode);
-						// transmit to JMS
+								amount, System.currentTimeMillis(),
+								accountId.toString(), tanCode);
 
-						// obtain context
+						/*
+						 * Now transmit everything to the JMS.
+						 */
 
-						InitialContext ic = null;
-						Connection jmsConnection = null;
-						java.sql.Connection jdbcConnection = null;
+						// JMS operations
 
-						try {
-							try {
-								// Step 1. Lookup the initial context
-								ic = new InitialContext();
+						// Step 2. Look up the XA Connection Factory
+						ConnectionFactory cf = (ConnectionFactory) ic
+								.lookup("java:/JmsXA");
 
-								// JMS operations
+						// Step 3. Look up the Queue
+						Queue queue = (Queue) ic.lookup("queue/test");
 
-								// Step 2. Look up the XA Connection Factory
-								ConnectionFactory cf = (ConnectionFactory) ic
-										.lookup("java:/JmsXA");
+						// Step 4. Create a connection, a session and a
+						// message producer for the queue
+						jmsConnection = cf.createConnection();
+						Session session = jmsConnection.createSession(false,
+								Session.AUTO_ACKNOWLEDGE);
+						MessageProducer messageProducer = session
+								.createProducer(queue);
 
-								// Step 3. Look up the Queue
-								Queue queue = (Queue) ic.lookup("queue/test");
+						// Step 5. Create a Text Message
+						ObjectMessage message = session
+								.createObjectMessage(transactionMessage);
+						messageProducer.send(message);
 
-								// Step 4. Create a connection, a session and a
-								// message producer for the queue
-								jmsConnection = cf.createConnection();
-								Session session = jmsConnection.createSession(
-										false, Session.AUTO_ACKNOWLEDGE);
-								MessageProducer messageProducer = session
-										.createProducer(queue);
+						// Message sent. Create update in cache.
+						fastAccount.setCredit(newCredit);
+						fastAccount.removeCoupon(tanCode);
+						fastAccount.increaseVersion();
 
-								// Step 5. Create a Text Message
-								ObjectMessage message = session
-										.createObjectMessage(transactionMessage);
-								messageProducer.send(message);
+						// immediately release the lock
+						accountTransactionManager.commit();
+						openTransaction = false;
 
-							} finally {
-								// Step 12. Be sure to close all resources!
-								if (ic != null) {
-									ic.close();
-								}
-								if (jmsConnection != null) {
-									jmsConnection.close();
-								}
-								if (jdbcConnection != null) {
-									jdbcConnection.close();
-								}
-							}
-						} catch (NamingException e) {
-							throw new WebApplicationException(e);
-						} catch (JMSException e) {
-							throw new WebApplicationException(e);
-						} catch (SQLException e) {
-							throw new WebApplicationException(e);
-						}
-
+					} else {
+						// no success!
+						// payment required ;-)
+						exceptionToThrow = new WebApplicationException(402);
+						accountTransactionManager.rollback();
+						openTransaction = false;
 					}
+				} else {
+					// account not found, so this is no valid coupon!
+					if (ic != null)
+						ic.close();
+					exceptionToThrow = new WebApplicationException(404);
+				}
+			} catch (NamingException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (JMSException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (NotSupportedException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (SystemException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (SecurityException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (IllegalStateException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (RollbackException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (HeuristicMixedException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (HeuristicRollbackException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} finally {
+				// Step 12. Be sure to close all resources!
+				try {
+					if (ic != null) {
+						ic.close();
+					}
+					if (jmsConnection != null) {
+						jmsConnection.close();
+					}
+				} catch (NamingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JMSException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				// check if the transaction is still open
+				// if it is so, rollback
+				try {
+					if (accountTransactionManager != null && openTransaction) {
+						accountTransactionManager.rollback();
+					}
+				} catch (SystemException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
+
 		}
 
 		if (success) {
-			result = new String("SUCCESS");
+			result = "SUCCESS";
+		} else if (exceptionToThrow != null) {
+			log.log(Level.SEVERE, exceptionToThrow.getMessage());
+			throw exceptionToThrow;
 		} else {
-			// TODO: use ExceptionMapper here or create more detailed response
-			// status code
-			throw new WebApplicationException(404);
+			log.log(Level.SEVERE, "Invalid transaction request");
+			throw new WebApplicationException(500);
 		}
 
 		return result;
@@ -308,9 +408,10 @@ public class FastCheck {
 		Cache<String, Long> couponCache = null;
 		Cache<Long, FastAccount> accountCache = null;
 		boolean openTransaction = false;
+		InitialContext ic = null;
 
 		try {
-			InitialContext ic = new InitialContext();
+			ic = new InitialContext();
 			CacheContainer cacheContainer = (CacheContainer) ic
 					.lookup(FASTCHECK_JNDI_NAME);
 			couponCache = cacheContainer.getCache("coupons");
@@ -374,9 +475,12 @@ public class FastCheck {
 									+ numberAccountsRequested);
 					clientRequest.accept("application/json");
 
-					// ArrayList<TransferAccount> list = new ArrayList<TransferAccount>();
-					GenericType<List<TransferAccount>> entity = new GenericType<List<TransferAccount>>() {};
-					ClientResponse<List<TransferAccount>> response = clientRequest.get(entity);
+					// ArrayList<TransferAccount> list = new
+					// ArrayList<TransferAccount>();
+					GenericType<List<TransferAccount>> entity = new GenericType<List<TransferAccount>>() {
+					};
+					ClientResponse<List<TransferAccount>> response = clientRequest
+							.get(entity);
 					List<TransferAccount> batch = response.getEntity();
 
 					for (TransferAccount transferAccount : batch) {
