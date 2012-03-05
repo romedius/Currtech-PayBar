@@ -29,6 +29,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.StatusType;
@@ -39,6 +40,7 @@ import org.infinispan.manager.CacheContainer;
 import org.infinispan.manager.CacheManager;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.util.GenericType;
 
 import paybar.junit.CouponAfterRegisterTest;
 
@@ -333,7 +335,7 @@ public class FastCheck {
 			 */
 
 			// fetch all data from the clearing house...
-			int numberAccountsUnread = 0;
+			long numberAccountsUnread = 0;
 			ClientRequest clientRequest = new ClientRequest(
 					"http://localhost:8080/clearinghouse/rest/fastcheckInterface/metaData");
 			clientRequest.accept("application/json");
@@ -344,7 +346,7 @@ public class FastCheck {
 			 */
 
 			ClientResponse<MetadataMessage> fastcheckResponse = clientRequest
-					.get();
+					.get(MetadataMessage.class);
 
 			// check error code of response
 			if (Response.Status.OK
@@ -355,9 +357,9 @@ public class FastCheck {
 
 				numberAccountsUnread = mm.getNoOfAccounts();
 
-				int currentAccountIndex = 0;
+				long currentAccountIndex = 0;
 
-				int numberAccountsRequested = 0;
+				long numberAccountsRequested = 0;
 
 				if (numberAccountsUnread > BATCH_SIZE) {
 					numberAccountsRequested = BATCH_SIZE;
@@ -372,9 +374,9 @@ public class FastCheck {
 									+ numberAccountsRequested);
 					clientRequest.accept("application/json");
 
-					ClientResponse<List<TransferAccount>> response = clientRequest
-							.get();
-
+					// ArrayList<TransferAccount> list = new ArrayList<TransferAccount>();
+					GenericType<List<TransferAccount>> entity = new GenericType<List<TransferAccount>>() {};
+					ClientResponse<List<TransferAccount>> response = clientRequest.get(entity);
 					List<TransferAccount> batch = response.getEntity();
 
 					for (TransferAccount transferAccount : batch) {

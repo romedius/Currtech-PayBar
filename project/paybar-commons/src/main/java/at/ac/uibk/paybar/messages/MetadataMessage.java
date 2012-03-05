@@ -9,14 +9,14 @@ public class MetadataMessage implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Integer noOfAccounts;
+	private Long noOfAccounts;
 
-	public Integer getNoOfAccounts() {
+	public Long getNoOfAccounts() {
 		return noOfAccounts;
 	}
 
-	public void setNoOfAccounts(Integer noOfAccounts) {
-		this.noOfAccounts = noOfAccounts;
+	public void setNoOfAccounts(Long long1) {
+		this.noOfAccounts = long1;
 	}
 	
 

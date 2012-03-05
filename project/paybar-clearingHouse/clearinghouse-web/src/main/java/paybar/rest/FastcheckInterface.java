@@ -1,5 +1,6 @@
 package paybar.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -42,8 +43,9 @@ public class FastcheckInterface {
 	@GET
 	@Path("/accountBatch/{iFrom}/{count}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<TransferAccount> getAccountBatch(
+	public ArrayList<TransferAccount> getAccountBatch(
 			@PathParam("iFrom") int indexFrom, @PathParam("count") int count) {
-		return dar.getAccounts(indexFrom, count);
+		ArrayList<TransferAccount> result = dar.getAccounts(indexFrom, count);	
+		return result;
 	}
 }

@@ -144,13 +144,13 @@ public class DetailAccountResource {
 		regenerateCoupons(username);
 	}
 
-	public Integer getNumberOfAccounts() {
+	public Long getNumberOfAccounts() {
 		Query query = em.createNamedQuery("getUserCount");
-		Integer result = (Integer) query.getSingleResult();
+		Long result = (Long) query.getSingleResult();
 		return result;
 	}
 
-	public List<TransferAccount> getAccounts(int first, int count) {
+	public ArrayList<TransferAccount> getAccounts(int first, int count) {
 		Query query = em.createQuery("SELECT da FROM DetailAccount da");
 		query.setFirstResult(first);
 		query.setMaxResults(count);
