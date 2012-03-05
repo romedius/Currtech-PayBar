@@ -19,6 +19,7 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.ws.rs.Consumes;
@@ -29,6 +30,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.StatusType;
 
 import org.infinispan.AdvancedCache;
 import org.infinispan.Cache;
@@ -300,23 +303,26 @@ public class FastCheck {
 	private boolean initCaches() {
 		boolean result = false;
 
+		Cache<String, Long> couponCache = null;
+		Cache<Long, FastAccount> accountCache = null;
+		boolean openTransaction = false;
+
 		try {
 			InitialContext ic = new InitialContext();
 			CacheContainer cacheContainer = (CacheContainer) ic
 					.lookup(FASTCHECK_JNDI_NAME);
-			Cache<String, Long> couponCache = cacheContainer
-					.getCache("coupons");
-			Cache<Long, FastAccount> accountCache = cacheContainer
-					.getCache("accounts");
+			couponCache = cacheContainer.getCache("coupons");
+			accountCache = cacheContainer.getCache("accounts");
 
 			// empty the cache
 			couponCache.clear();
 
 			AdvancedCache<Long, FastAccount> advancedCache = accountCache
 					.getAdvancedCache();
-			TransactionManager transactionManager = advancedCache
+			TransactionManager accountTransactionManager = advancedCache
 					.getTransactionManager();
-			transactionManager.begin();
+			accountTransactionManager.begin();
+			openTransaction = true;
 
 			// empty the cache
 			accountCache.clear();
@@ -329,7 +335,7 @@ public class FastCheck {
 			// fetch all data from the clearing house...
 			int numberAccountsUnread = 0;
 			ClientRequest clientRequest = new ClientRequest(
-					"http://localhost:8080/clearinghouse/fastcheckInterface/metaData");
+					"http://localhost:8080/clearinghouse/rest/fastcheckInterface/metaData");
 			clientRequest.accept("application/json");
 			/*
 			 * clientRequest .body("application/json", new
@@ -340,70 +346,79 @@ public class FastCheck {
 			ClientResponse<MetadataMessage> fastcheckResponse = clientRequest
 					.get();
 
-			MetadataMessage mm = fastcheckResponse
-					.getEntity(MetadataMessage.class);
+			// check error code of response
+			if (Response.Status.OK
+					.equals(fastcheckResponse.getResponseStatus())) {
 
-			numberAccountsUnread = mm.getNoOfAccounts();
+				MetadataMessage mm = fastcheckResponse
+						.getEntity(MetadataMessage.class);
 
-			int currentAccountIndex = 0;
+				numberAccountsUnread = mm.getNoOfAccounts();
 
-			int numberAccountsRequested = 0;
+				int currentAccountIndex = 0;
 
-			if (numberAccountsUnread > BATCH_SIZE) {
-				numberAccountsRequested = BATCH_SIZE;
-			} else {
-				numberAccountsRequested = numberAccountsUnread;
-			}
+				int numberAccountsRequested = 0;
 
-			while (numberAccountsUnread > 0) {
-				clientRequest = new ClientRequest(
-						"http://localhost:8080/clearinghouse/fastcheckInterface/accountBatch/"
-								+ currentAccountIndex + "/"
-								+ numberAccountsRequested);
-				clientRequest.accept("application/json");
+				if (numberAccountsUnread > BATCH_SIZE) {
+					numberAccountsRequested = BATCH_SIZE;
+				} else {
+					numberAccountsRequested = numberAccountsUnread;
+				}
 
-				ClientResponse<List<TransferAccount>> response = clientRequest
-						.get();
+				while (numberAccountsUnread > 0) {
+					clientRequest = new ClientRequest(
+							"http://localhost:8080/clearinghouse/rest/fastcheckInterface/accountBatch/"
+									+ currentAccountIndex + "/"
+									+ numberAccountsRequested);
+					clientRequest.accept("application/json");
 
-				List<TransferAccount> batch = response.getEntity();
+					ClientResponse<List<TransferAccount>> response = clientRequest
+							.get();
 
-				for (TransferAccount transferAccount : batch) {
-					ArrayList<FastCoupon> fastCoupons = transferAccount
-							.getCoupons();
-					FastAccount fastAccount = new FastAccount();
+					List<TransferAccount> batch = response.getEntity();
 
-					/*
-					 * Fast index for every coupon that is added to the
-					 * system... every coupon has a unique code that links to
-					 * its user
-					 */
-					for (FastCoupon fastCoupon : fastCoupons) {
-						couponCache.put(fastCoupon.getCouponCode(), new Long(
-								fastAccount.getId()));
+					for (TransferAccount transferAccount : batch) {
+						ArrayList<FastCoupon> fastCoupons = transferAccount
+								.getCoupons();
+						FastAccount fastAccount = new FastAccount();
+
+						/*
+						 * Fast index for every coupon that is added to the
+						 * system... every coupon has a unique code that links
+						 * to its user
+						 */
+						for (FastCoupon fastCoupon : fastCoupons) {
+							couponCache.put(fastCoupon.getCouponCode(),
+									new Long(fastAccount.getId()));
+						}
+
+						fastAccount.addFastCoupons(fastCoupons);
+						accountCache.put(new Long(fastAccount.getId()),
+								fastAccount);
 					}
 
-					fastAccount.addFastCoupons(fastCoupons);
-					accountCache
-							.put(new Long(fastAccount.getId()), fastAccount);
+					if (batch.size() < numberAccountsRequested) {
+						// there has been some change in the available accounts
+						// number... stop fetching accounts now.
+						numberAccountsUnread = 0;
+					} else {
+						numberAccountsUnread -= numberAccountsRequested;
+					}
 				}
 
-				if (batch.size() < numberAccountsRequested) {
-					// there has been some change in the available accounts
-					// number... stop fetching accounts now.
-					numberAccountsUnread = 0;
-				} else {
-					numberAccountsUnread -= numberAccountsRequested;
-				}
+				/*
+				 * Commit the newly initialized caches.
+				 */
+
+				accountTransactionManager.commit();
+				// couponCache.getAdvancedCache().getTransactionManager().commit();
+				openTransaction = false;
+
+				result = true;
+			} else {
+				accountTransactionManager.commit();
+				openTransaction = false;
 			}
-
-			/*
-			 * Commit the newly initialized caches.
-			 */
-
-			accountCache.getAdvancedCache().getTransactionManager().commit();
-			// couponCache.getAdvancedCache().getTransactionManager().commit();
-
-			result = true;
 
 		} catch (NamingException e) {
 			// TODO: logging
@@ -411,6 +426,27 @@ public class FastCheck {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			// close all open transactions
+			if (accountCache != null && openTransaction) {
+				try {
+					// rollback only if the transaction has not been closed
+					// already
+					accountCache.getAdvancedCache().getTransactionManager()
+							.rollback();
+
+					// catch all inner exceptions and log them...
+				} catch (IllegalStateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SystemException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 
 		return result;
