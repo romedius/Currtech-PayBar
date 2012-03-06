@@ -99,7 +99,7 @@ public class FastCheck {
 	public String transaction(@PathParam("tanCode") String tanCode,
 			TransactionRequest transactionRequest) {
 		String result = "FAILURE";
-		boolean success = true;
+		boolean success = false;
 		InitialContext ic = null;
 		Connection jmsConnection = null;
 		boolean openTransaction = false;
@@ -135,13 +135,17 @@ public class FastCheck {
 					openTransaction = true;
 
 					// try to find the account
-					boolean gotLock = advancedCache.lock(accountId);
+					boolean gotLock = true;
+					
+					/*
+					advancedCache.lock(accountId);
 					int tries = 10;
 
 					while (!gotLock && tries > 0) {
 						tries--;
 						gotLock = advancedCache.lock(accountId);
 					}
+					*/
 
 					// if we still do not have a lock, exit by exception
 					if (!gotLock) {
@@ -482,6 +486,8 @@ public class FastCheck {
 						ArrayList<FastCoupon> fastCoupons = transferAccount
 								.getCoupons();
 						FastAccount fastAccount = new FastAccount();
+						fastAccount.setId(transferAccount.getId());
+						fastAccount.setCredit(transferAccount.getCredit());
 
 						/*
 						 * Fast index for every coupon that is added to the
@@ -537,13 +543,10 @@ public class FastCheck {
 							.rollback();
 
 					// catch all inner exceptions and log them...
-				} catch (IllegalStateException e) {
+				} catch (IllegalStateException | SecurityException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (SecurityException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SystemException e) {
+				}  catch (SystemException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

@@ -75,6 +75,7 @@ public class DelayedTransactionProcessor implements MessageListener {
 
 				String userName = transactionMessage.getUserName();
 				DetailAccount da = dar.getUserByName(userName, false);
+				
 				Date now = new Date(transactionMessage.getTimestamp());
 
 				// TODO: extend message for extra information like credit card
