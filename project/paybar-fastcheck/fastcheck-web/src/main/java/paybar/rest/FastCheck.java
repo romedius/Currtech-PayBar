@@ -88,7 +88,108 @@ public class FastCheck {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public String newAccount(TransferAccount transferAccount) {
-		return null;
+		String result = "FAILURE";
+
+		boolean success = false;
+		InitialContext ic = null;
+		Connection jmsConnection = null;
+		boolean openTransaction = false;
+		WebApplicationException exceptionToThrow = null;
+		TransactionManager accountTransactionManager = null;
+
+		// method needs @Form parameter with @POST
+		if (transferAccount != null) {
+
+			long accountId = transferAccount.getId();
+			long amount = transferAccount.getCredit();
+
+			// fetch the account for the request
+			try {
+				ic = getInitialContextOfApp();
+				CacheContainer cacheContainer = (CacheContainer) ic
+						.lookup(FASTCHECK_JNDI_NAME);
+
+				Cache<Long, FastAccount> accountCache = cacheContainer
+						.getCache("accounts");
+				Cache<String, Long> couponCache = cacheContainer
+						.getCache("coupons");
+				AdvancedCache<Long, FastAccount> advancedCache = accountCache
+						.getAdvancedCache();
+				accountTransactionManager = advancedCache
+						.getTransactionManager();
+				accountTransactionManager.begin();
+				openTransaction = true;
+
+				FastAccount fastAccount = advancedCache.get(accountId);
+
+				if (fastAccount == null) {
+					addAccount(couponCache, accountCache, transferAccount);
+					accountTransactionManager.commit();
+				} else {
+					// existing account found, so this is no valid new account
+					if (ic != null)
+						ic.close();
+					exceptionToThrow = new WebApplicationException(404);
+					accountTransactionManager.rollback();
+				}
+			} catch (NamingException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (NotSupportedException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (SystemException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (SecurityException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (IllegalStateException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (RollbackException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (HeuristicMixedException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (HeuristicRollbackException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} finally {
+				// Step 12. Be sure to close all resources!
+				try {
+					if (ic != null) {
+						ic.close();
+					}
+					if (jmsConnection != null) {
+						jmsConnection.close();
+					}
+				} catch (NamingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JMSException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				// check if the transaction is still open
+				// if it is so, rollback
+				try {
+					if (accountTransactionManager != null && openTransaction) {
+						accountTransactionManager.rollback();
+					}
+				} catch (SystemException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		}
+
+		if (success) {
+			result = "SUCCESS";
+		} else if (exceptionToThrow != null) {
+			log.log(Level.SEVERE, exceptionToThrow.getMessage());
+			throw exceptionToThrow;
+		} else {
+			log.log(Level.SEVERE, "Invalid transaction request");
+			throw new WebApplicationException(500);
+		}
+
+		return result;
 	}
 
 	@POST
@@ -96,7 +197,9 @@ public class FastCheck {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public String newCoupons(TransferAccount transferAccount) {
-		return null;
+		String result = "FAILURE";
+
+		return result;
 	}
 
 	/**
@@ -609,25 +712,7 @@ public class FastCheck {
 					List<TransferAccount> batch = response.getEntity();
 
 					for (TransferAccount transferAccount : batch) {
-						ArrayList<FastCoupon> fastCoupons = transferAccount
-								.getCoupons();
-						FastAccount fastAccount = new FastAccount();
-						fastAccount.setId(transferAccount.getId());
-						fastAccount.setCredit(transferAccount.getCredit());
-
-						/*
-						 * Fast index for every coupon that is added to the
-						 * system... every coupon has a unique code that links
-						 * to its user
-						 */
-						for (FastCoupon fastCoupon : fastCoupons) {
-							couponCache.put(fastCoupon.getCouponCode(),
-									new Long(fastAccount.getId()));
-						}
-
-						fastAccount.addFastCoupons(fastCoupons);
-						accountCache.put(new Long(fastAccount.getId()),
-								fastAccount);
+						addAccount(couponCache, accountCache, transferAccount);
 					}
 
 					if (batch.size() < numberAccountsRequested) {
@@ -680,6 +765,27 @@ public class FastCheck {
 		}
 
 		return result;
+	}
+
+	private void addAccount(Cache<String, Long> couponCache,
+			Cache<Long, FastAccount> accountCache,
+			TransferAccount transferAccount) {
+		ArrayList<FastCoupon> fastCoupons = transferAccount.getCoupons();
+		FastAccount fastAccount = new FastAccount();
+		fastAccount.setId(transferAccount.getId());
+		fastAccount.setCredit(transferAccount.getCredit());
+
+		/*
+		 * Fast index for every coupon that is added to the system... every
+		 * coupon has a unique code that links to its user
+		 */
+		for (FastCoupon fastCoupon : fastCoupons) {
+			couponCache.put(fastCoupon.getCouponCode(),
+					new Long(fastAccount.getId()));
+		}
+
+		fastAccount.addFastCoupons(fastCoupons);
+		accountCache.put(new Long(fastAccount.getId()), fastAccount);
 	}
 
 }
