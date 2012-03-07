@@ -68,7 +68,7 @@ public class DelayedTransactionProcessor implements MessageListener {
 					DetailAccount da = dar.getUserByID(Long.valueOf(transactionMessage.getUserName()).longValue(), false);
 					da.setCredit(da.getCredit() - transactionMessage.getAmount());
 					
-					// TODO: save object in datastore
+					dar.updateDetailAccount(da);
 					
 				}
 				break;
