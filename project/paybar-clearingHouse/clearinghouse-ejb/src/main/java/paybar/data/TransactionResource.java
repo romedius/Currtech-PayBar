@@ -41,7 +41,29 @@ public class TransactionResource {
 	 * This Method is used to create a transactions where the user account get's
 	 * charged. The Ammount must be positive.
 	 * */
-	public void createChargeTransaction(long amount, String Message,
+	public void createChargeTransactionById(long amount, String Message,
+			String posId, long id, Date transactionTime)
+			throws PaybarResourceException {
+		Query query = em
+		// SELECT da FROM DetailAccount da, IN (da.coupons) c WHERE :param2 = c
+		// SELECT da FROM DetailAccount da, Coupon c WHERE c = :param2 AND c IN
+		// (da.coupons)
+				.createQuery("SELECT da FROM DetailAccount da WHERE :param2 = da.id");
+		query.setParameter("param2", id);
+		DetailAccount da = null;
+		try {
+			da = (DetailAccount) query.getSingleResult();
+		} catch (NoResultException e) {
+			throw new PersistenceException("No such user");
+		}
+		createChargeTransaction(amount, Message, posId, da, transactionTime);
+	}
+
+	/**
+	 * This Method is used to create a transactions where the user account get's
+	 * charged. The Ammount must be positive.
+	 * */
+	public void createChargeTransactionByUsername(long amount, String Message,
 			String posId, String username, Date transactionTime)
 			throws PaybarResourceException {
 		Query query = em
@@ -56,7 +78,18 @@ public class TransactionResource {
 		} catch (NoResultException e) {
 			throw new PersistenceException("No such user");
 		}
-		query = em
+		createChargeTransaction(amount, Message, posId, da, transactionTime);
+	}
+
+	/**
+	 * This Method is used to create a transactions where the user account get's
+	 * charged. The Ammount must be positive.
+	 * */
+	public void createChargeTransaction(long amount, String Message,
+			String posId, DetailAccount da, Date transactionTime)
+			throws PaybarResourceException {
+
+		Query query = em
 				.createQuery("Select p from PointOfSale p where p.name like :param3 ");
 		query.setParameter("param3", posId);
 		PointOfSale pos = null;
@@ -83,7 +116,8 @@ public class TransactionResource {
 			em.flush();
 		} else {
 			throw new PaybarResourceException("Charged Amount must be positive");
-			// Which means the transaction value must be negative, because Money flows from the Bank to the user.
+			// Which means the transaction value must be negative, because Money
+			// flows from the Bank to the user.
 		}
 	}
 
@@ -130,30 +164,28 @@ public class TransactionResource {
 		if (amount > 0) {
 			if (da.getCredit() > amount) {
 				/*
-				 * removed due to assumed uselessness
-				if (preTransactionCredit != null
-						&& da.getCredit() >= preTransactionCredit) {
-					// Maybe there was an update of the amounts due to a charge
-					// process. In this case the credit of the user is bigger
-					// than the one stored in the Infinispan cache.
-					throw new PaybarResourceException(
-							"Infinispan cache information of user's credit before transaction is not equal to that in the Database");
-				}
-				*/
+				 * removed due to assumed uselessness if (preTransactionCredit
+				 * != null && da.getCredit() >= preTransactionCredit) { // Maybe
+				 * there was an update of the amounts due to a charge //
+				 * process. In this case the credit of the user is bigger //
+				 * than the one stored in the Infinispan cache. throw new
+				 * PaybarResourceException(
+				 * "Infinispan cache information of user's credit before transaction is not equal to that in the Database"
+				 * ); }
+				 */
 				long newAmmount = da.getCredit() - amount;
-				
+
 				/*
-				 * removed due to assumed uselessness
-				if (pastTransactionCredit != null
-						&& newAmmount >= pastTransactionCredit) {
-					throw new PaybarResourceException(
-							"Infinispan cache information of user's credit after transaction is not equal to that in the database");
-				}
-				*/
+				 * removed due to assumed uselessness if (pastTransactionCredit
+				 * != null && newAmmount >= pastTransactionCredit) { throw new
+				 * PaybarResourceException(
+				 * "Infinispan cache information of user's credit after transaction is not equal to that in the database"
+				 * ); }
+				 */
 
 				Transaction tr = new Transaction();
 				/* Create transaction */
-				tr.setAmount(0-amount);
+				tr.setAmount(0 - amount);
 				tr.setCoupon(c);
 				tr.setDetailAccount(da);
 				tr.setPos(pos);
