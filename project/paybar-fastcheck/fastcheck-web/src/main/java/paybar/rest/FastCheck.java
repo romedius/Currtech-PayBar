@@ -332,30 +332,86 @@ public class FastCheck {
 	public String charge(@PathParam("username") Long id,
 			@PathParam("creditCardNumber") String creditCardNumber,
 			TransactionRequest transactionRequest) {
-		String result = null;
-		boolean success = true;
+		String result = "FAILURE";
+		boolean success = false;
+		InitialContext ic = null;
+		Connection jmsConnection = null;
+		boolean openTransaction = false;
+		WebApplicationException exceptionToThrow = null;
+		TransactionManager accountTransactionManager = null;
 
 		// method needs @Form parameter with @POST
 		if (transactionRequest != null) {
-			String bankId = transactionRequest.getPosOrBankId();
+			String posId = transactionRequest.getPosOrBankId();
 			long amount = transactionRequest.getAmount();
 
-			if (success) {
-				TransactionMessage transactionMessage = new TransactionMessage(
-						TransactionMessage.TYPE_CHARGE, bankId, amount,
-						System.currentTimeMillis(), id, creditCardNumber);
-				// transmit to JMS
+			// fetch the account for the request
+			try {
+				ic = getInitialContextOfApp();
+				CacheContainer cacheContainer = (CacheContainer) ic
+						.lookup(FASTCHECK_JNDI_NAME);
 
-				// obtain context
+				Long accountId = id;
 
-				InitialContext ic = null;
-				Connection jmsConnection = null;
-				java.sql.Connection jdbcConnection = null;
+				if (accountId != null) {
 
-				try {
-					try {
-						// Step 1. Lookup the initial context
-						ic = getInitialContextOfApp();
+					// fetch the account, open a transaction
+					Cache<Long, FastAccount> accountCache = cacheContainer
+							.getCache("accounts");
+					AdvancedCache<Long, FastAccount> advancedCache = accountCache
+							.getAdvancedCache();
+					accountTransactionManager = advancedCache
+							.getTransactionManager();
+					accountTransactionManager.begin();
+					openTransaction = true;
+
+					// try to find the account
+					boolean gotLock = true;
+
+					/*
+					 * advancedCache.lock(accountId); int tries = 10;
+					 * 
+					 * while (!gotLock && tries > 0) { tries--; gotLock =
+					 * advancedCache.lock(accountId); }
+					 */
+
+					// if we still do not have a lock, exit by exception
+					if (!gotLock) {
+						// maybe there is no such key
+						// but this should not be
+						// TODO: check for existence of key
+
+						// bail out with a overloaded exception... the cache is
+						// not responding currently
+						exceptionToThrow = new WebApplicationException(503);
+					}
+
+					FastAccount fastAccount = advancedCache.get(accountId);
+
+					if (fastAccount == null) {
+						// bail out with an exception of 404 because we do not
+						// have such an account
+						exceptionToThrow = new WebApplicationException(404);
+					}
+
+					// see if credit card is valid
+					// but not in this prototype
+					// TODO: should check for overflows and other validation of
+					// limits
+					long oldCredit = fastAccount.getCredit();
+					long newCredit = oldCredit + amount;
+					success = true;
+
+					if (success) {
+						TransactionMessage transactionMessage = new TransactionMessage(
+								TransactionMessage.TYPE_CHARGE,
+								transactionRequest.getPosOrBankId(), amount,
+								System.currentTimeMillis(), id,
+								creditCardNumber);
+
+						/*
+						 * Now transmit everything to the JMS.
+						 */
 
 						// JMS operations
 
@@ -366,8 +422,8 @@ public class FastCheck {
 						// Step 3. Look up the Queue
 						Queue queue = (Queue) ic.lookup("queue/test");
 
-						// Step 4. Create a connection, a session and a message
-						// producer for the queue
+						// Step 4. Create a connection, a session and a
+						// message producer for the queue
 						jmsConnection = cf.createConnection();
 						Session session = jmsConnection.createSession(false,
 								Session.AUTO_ACKNOWLEDGE);
@@ -377,39 +433,85 @@ public class FastCheck {
 						// Step 5. Create a Text Message
 						ObjectMessage message = session
 								.createObjectMessage(transactionMessage);
-
-						// Step 6. Send The Text Message
 						messageProducer.send(message);
-						// TODO: log this
-					} finally {
-						// Step 12. Be sure to close all resources!
-						if (ic != null) {
-							ic.close();
-						}
-						if (jmsConnection != null) {
-							jmsConnection.close();
-						}
-						if (jdbcConnection != null) {
-							jdbcConnection.close();
-						}
+
+						// Message sent. Create update in cache.
+						fastAccount.setCredit(newCredit);
+
+						// immediately release the lock
+						accountTransactionManager.commit();
+						openTransaction = false;
+
+					} else {
+						// no success!
+						// payment required ;-)
+						exceptionToThrow = new WebApplicationException(402);
+						accountTransactionManager.rollback();
+						openTransaction = false;
+					}
+				} else {
+					// account not found, so this is no valid coupon!
+					if (ic != null)
+						ic.close();
+					exceptionToThrow = new WebApplicationException(404);
+				}
+			} catch (NamingException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (JMSException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (NotSupportedException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (SystemException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (SecurityException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (IllegalStateException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (RollbackException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (HeuristicMixedException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (HeuristicRollbackException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} finally {
+				// Step 12. Be sure to close all resources!
+				try {
+					if (ic != null) {
+						ic.close();
+					}
+					if (jmsConnection != null) {
+						jmsConnection.close();
 					}
 				} catch (NamingException e) {
-					throw new WebApplicationException(e);
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				} catch (JMSException e) {
-					throw new WebApplicationException(e);
-				} catch (SQLException e) {
-					throw new WebApplicationException(e);
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 
+				// check if the transaction is still open
+				// if it is so, rollback
+				try {
+					if (accountTransactionManager != null && openTransaction) {
+						accountTransactionManager.rollback();
+					}
+				} catch (SystemException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+
 		}
 
 		if (success) {
-			result = new String("SUCCESS");
+			result = "SUCCESS";
+		} else if (exceptionToThrow != null) {
+			log.log(Level.SEVERE, exceptionToThrow.getMessage());
+			throw exceptionToThrow;
 		} else {
-			// TODO: use ExceptionMapper here or create more detailed response
-			// status code
-			throw new WebApplicationException(404);
+			log.log(Level.SEVERE, "Invalid transaction request");
+			throw new WebApplicationException(500);
 		}
 
 		return result;
