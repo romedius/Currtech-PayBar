@@ -86,7 +86,8 @@ public class DelayedTransactionProcessor implements MessageListener {
 
 				// TODO: extend message for extra information like credit card
 				// number?
-				tr.createChargeTransaction(amount,
+				
+				tr.createChargeTransactionByUsername(amount,
 						"Charging Account from Credit Card: "
 								+ transactionMessage.getCouponCode(),
 						transactionMessage.getPosOrBankId(), userName, now);
