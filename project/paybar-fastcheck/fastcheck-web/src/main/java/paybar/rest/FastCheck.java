@@ -125,6 +125,7 @@ public class FastCheck {
 				if (fastAccount == null) {
 					addAccount(couponCache, accountCache, transferAccount);
 					accountTransactionManager.commit();
+					success = true;
 				} else {
 					// existing account found, so this is no valid new account
 					if (ic != null)
@@ -149,7 +150,7 @@ public class FastCheck {
 			} catch (HeuristicRollbackException e) {
 				exceptionToThrow = new WebApplicationException(e);
 			} finally {
-				// Step 12. Be sure to close all resources!
+				// Be sure to close all resources!
 				try {
 					if (ic != null) {
 						ic.close();
@@ -198,6 +199,107 @@ public class FastCheck {
 	@Produces(MediaType.APPLICATION_JSON)
 	public String newCoupons(TransferAccount transferAccount) {
 		String result = "FAILURE";
+
+		boolean success = false;
+		InitialContext ic = null;
+		Connection jmsConnection = null;
+		boolean openTransaction = false;
+		WebApplicationException exceptionToThrow = null;
+		TransactionManager accountTransactionManager = null;
+
+		// method needs @Form parameter with @POST
+		if (transferAccount != null) {
+
+			long accountId = transferAccount.getId();
+			long amount = transferAccount.getCredit();
+
+			// fetch the account for the request
+			try {
+				ic = getInitialContextOfApp();
+				CacheContainer cacheContainer = (CacheContainer) ic
+						.lookup(FASTCHECK_JNDI_NAME);
+
+				Cache<Long, FastAccount> accountCache = cacheContainer
+						.getCache("accounts");
+				Cache<String, Long> couponCache = cacheContainer
+						.getCache("coupons");
+				AdvancedCache<Long, FastAccount> advancedCache = accountCache
+						.getAdvancedCache();
+				accountTransactionManager = advancedCache
+						.getTransactionManager();
+				accountTransactionManager.begin();
+				openTransaction = true;
+
+				FastAccount fastAccount = advancedCache.get(accountId);
+
+				if (fastAccount != null) {
+					addNewCoupons(couponCache, transferAccount.getCoupons(),
+							fastAccount);
+					accountTransactionManager.commit();
+					success = true;
+				} else {
+					// existing account found, so this is no valid new account
+					if (ic != null)
+						ic.close();
+					exceptionToThrow = new WebApplicationException(404);
+					accountTransactionManager.rollback();
+				}
+			} catch (NamingException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (NotSupportedException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (SystemException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (SecurityException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (IllegalStateException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (RollbackException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (HeuristicMixedException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} catch (HeuristicRollbackException e) {
+				exceptionToThrow = new WebApplicationException(e);
+			} finally {
+				// Be sure to close all resources!
+				try {
+					if (ic != null) {
+						ic.close();
+					}
+					if (jmsConnection != null) {
+						jmsConnection.close();
+					}
+				} catch (NamingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JMSException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				// check if the transaction is still open
+				// if it is so, rollback
+				try {
+					if (accountTransactionManager != null && openTransaction) {
+						accountTransactionManager.rollback();
+					}
+				} catch (SystemException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		}
+
+		if (success) {
+			result = "SUCCESS";
+		} else if (exceptionToThrow != null) {
+			log.log(Level.SEVERE, exceptionToThrow.getMessage());
+			throw exceptionToThrow;
+		} else {
+			log.log(Level.SEVERE, "Invalid transaction request");
+			throw new WebApplicationException(500);
+		}
 
 		return result;
 	}
@@ -775,6 +877,12 @@ public class FastCheck {
 		fastAccount.setId(transferAccount.getId());
 		fastAccount.setCredit(transferAccount.getCredit());
 
+		addNewCoupons(couponCache, fastCoupons, fastAccount);
+		accountCache.put(new Long(fastAccount.getId()), fastAccount);
+	}
+
+	private void addNewCoupons(Cache<String, Long> couponCache,
+			ArrayList<FastCoupon> fastCoupons, FastAccount fastAccount) {
 		/*
 		 * Fast index for every coupon that is added to the system... every
 		 * coupon has a unique code that links to its user
@@ -785,7 +893,6 @@ public class FastCheck {
 		}
 
 		fastAccount.addFastCoupons(fastCoupons);
-		accountCache.put(new Long(fastAccount.getId()), fastAccount);
 	}
 
 }
