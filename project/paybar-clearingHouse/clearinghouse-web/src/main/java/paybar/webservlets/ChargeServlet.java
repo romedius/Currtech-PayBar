@@ -80,7 +80,7 @@ public class ChargeServlet extends HttpServlet {
 
 				ClientRequest clientRequest = new ClientRequest(
 						"http://localhost:8080/fastcheck/rest/transactions/charge/"
-								+ da.getUserName() + "/" + creditCardNumber);
+								+ da.getId() + "/" + creditCardNumber);
 				clientRequest.accept("application/json");
 				clientRequest
 						.body("application/json", new TransactionRequest(amount, Configuration.BankPosName.toString()));

@@ -531,10 +531,10 @@ public class FastCheck {
 	 * @throws NamingException
 	 */
 	@POST
-	@Path("/charge/{username}/{creditCardNumber}")
+	@Path("/charge/{id}/{creditCardNumber}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public String charge(@PathParam("username") Long id,
+	public String charge(@PathParam("id") Long id,
 			@PathParam("creditCardNumber") String creditCardNumber,
 			TransactionRequest transactionRequest) {
 		String result = "FAILURE";
