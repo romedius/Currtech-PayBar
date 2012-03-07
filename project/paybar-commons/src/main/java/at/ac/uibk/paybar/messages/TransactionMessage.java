@@ -57,22 +57,30 @@ public class TransactionMessage implements Serializable {
 	private int type = 0;
 
 	/**
-	 * The username by which the user is known to the system.
+	 * The userid by which the user is known to the system.
 	 */
-	private String userName;
+	private long userId;
+
+	public long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
 
 	public TransactionMessage() {
 
 	}
 
 	public TransactionMessage(int type, String posOrBankId, long amount,
-			long timestamp, String userName, String tanCode) {
+			long timestamp, long userId, String tanCode) {
 		this.type = type;
 		this.couponCode = tanCode;
 		this.posOrBankId = posOrBankId;
 		this.amount = amount;
 		this.timestamp = timestamp;
-		this.userName = userName;
+		this.userId = userId;
 	}
 
 	public long getAmount() {
@@ -95,10 +103,6 @@ public class TransactionMessage implements Serializable {
 		return type;
 	}
 
-	public String getUserName() {
-		return userName;
-	}
-
 	public void setAmount(long amount) {
 		this.amount = amount;
 	}
@@ -117,9 +121,5 @@ public class TransactionMessage implements Serializable {
 
 	public void setType(int type) {
 		this.type = type;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
 	}
 }

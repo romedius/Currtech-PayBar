@@ -83,7 +83,6 @@ public class FastCheck {
 	// @Resource(lookup = "java:jboss/infinispan/fastcheck")
 	// CacheContainer cacheContainer;
 
-	
 	@POST
 	@Path("/account/new")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -91,7 +90,7 @@ public class FastCheck {
 	public String newAccount(TransferAccount transferAccount) {
 		return null;
 	}
-	
+
 	@POST
 	@Path("/coupons/new")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -99,14 +98,16 @@ public class FastCheck {
 	public String newCoupons(TransferAccount transferAccount) {
 		return null;
 	}
-	
-	
+
 	/**
 	 * This method provides the central transaction authorization method.
 	 * 
-	 * @param posId Point of Sale
-	 * @param tanCode coupon code
-	 * @param amount amount to be deducted, positive long
+	 * @param posId
+	 *            Point of Sale
+	 * @param tanCode
+	 *            coupon code
+	 * @param amount
+	 *            amount to be deducted, positive long
 	 * @return
 	 * @throws NamingException
 	 */
@@ -154,16 +155,13 @@ public class FastCheck {
 
 					// try to find the account
 					boolean gotLock = true;
-					
-					/*
-					advancedCache.lock(accountId);
-					int tries = 10;
 
-					while (!gotLock && tries > 0) {
-						tries--;
-						gotLock = advancedCache.lock(accountId);
-					}
-					*/
+					/*
+					 * advancedCache.lock(accountId); int tries = 10;
+					 * 
+					 * while (!gotLock && tries > 0) { tries--; gotLock =
+					 * advancedCache.lock(accountId); }
+					 */
 
 					// if we still do not have a lock, exit by exception
 					if (!gotLock) {
@@ -195,8 +193,8 @@ public class FastCheck {
 						// TODO: fetch username from cache
 						TransactionMessage transactionMessage = new TransactionMessage(
 								TransactionMessage.TYPE_TRANSACTION, posId,
-								amount, System.currentTimeMillis(),
-								accountId.toString(), tanCode);
+								amount, System.currentTimeMillis(), accountId,
+								tanCode);
 
 						/*
 						 * Now transmit everything to the JMS.
@@ -308,18 +306,22 @@ public class FastCheck {
 	}
 
 	private InitialContext getInitialContextOfApp() throws NamingException {
-		if(INITIAL_CONTEXT == null)
-			INITIAL_CONTEXT  = new InitialContext(); 
+		if (INITIAL_CONTEXT == null)
+			INITIAL_CONTEXT = new InitialContext();
 		return INITIAL_CONTEXT;
 	}
 
 	/**
 	 * This method allows putting money on to a user's account.
 	 * 
-	 * @param posId This time it is the source financial institute
-	 * @param tanCode Used for storing credit card details
-	 * @param amount amount to be charged on to the users account
-	 * @param id the username of the account to be charged
+	 * @param posId
+	 *            This time it is the source financial institute
+	 * @param tanCode
+	 *            Used for storing credit card details
+	 * @param amount
+	 *            amount to be charged on to the users account
+	 * @param id
+	 *            the username of the account to be charged
 	 * @return
 	 * @throws NamingException
 	 */
@@ -341,7 +343,7 @@ public class FastCheck {
 			if (success) {
 				TransactionMessage transactionMessage = new TransactionMessage(
 						TransactionMessage.TYPE_CHARGE, bankId, amount,
-						System.currentTimeMillis(), id.toString(), creditCardNumber);
+						System.currentTimeMillis(), id, creditCardNumber);
 				// transmit to JMS
 
 				// obtain context
@@ -568,7 +570,7 @@ public class FastCheck {
 				} catch (IllegalStateException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}  catch (SystemException e) {
+				} catch (SystemException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

@@ -64,12 +64,14 @@ public class DelayedTransactionProcessor implements MessageListener {
 							transactionMessage.getCouponCode(), text,
 							transactionMessage.getPosOrBankId(), new Date(
 									transactionMessage.getTimestamp()));
-					
-					DetailAccount da = dar.getUserByID(Long.valueOf(transactionMessage.getUserName()).longValue(), false);
-					da.setCredit(da.getCredit() - transactionMessage.getAmount());
-					
+
+					DetailAccount da = dar.getUserByID(
+							transactionMessage.getUserId(), false);
+					da.setCredit(da.getCredit()
+							- transactionMessage.getAmount());
+
 					dar.updateDetailAccount(da);
-					
+
 				}
 				break;
 			}
@@ -79,19 +81,20 @@ public class DelayedTransactionProcessor implements MessageListener {
 				 */
 				long amount = transactionMessage.getAmount();
 
-				String userName = transactionMessage.getUserName();
-				DetailAccount da = dar.getUserByName(userName, false);
-				
+				long userId = transactionMessage.getUserId();
+				DetailAccount da = dar.getUserByID(userId, false);
+
 				Date now = new Date(transactionMessage.getTimestamp());
 
 				// TODO: extend message for extra information like credit card
 				// number?
 				
-				tr.createChargeTransactionByUsername(amount,
+				tr.createChargeTransactionById(amount,
 						"Charging Account from Credit Card: "
 								+ transactionMessage.getCouponCode(),
-						transactionMessage.getPosOrBankId(), userName, now);
-				da.setCredit(da.getCredit());
+						transactionMessage.getPosOrBankId(), userId, now);
+				da.setCredit(da.getCredit() + transactionMessage.getAmount());
+				dar.updateDetailAccount(da);
 
 				break;
 			}
@@ -100,7 +103,6 @@ public class DelayedTransactionProcessor implements MessageListener {
 				log.info("ERROR handling TransactionMessage. Unsupported type.");
 				break;
 			}
-
 		} catch (Throwable e) {
 			e.printStackTrace();
 		} finally {
