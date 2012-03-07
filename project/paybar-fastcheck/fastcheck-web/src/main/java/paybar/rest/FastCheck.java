@@ -543,7 +543,7 @@ public class FastCheck {
 							.rollback();
 
 					// catch all inner exceptions and log them...
-				} catch (IllegalStateException | SecurityException e) {
+				} catch (IllegalStateException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}  catch (SystemException e) {
