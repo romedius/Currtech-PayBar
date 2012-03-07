@@ -72,6 +72,18 @@ public class DetailAccountResource {
 		return result;
 
 	}
+	
+	public DetailAccount getUserByID(long id,boolean eager)
+			throws NoResultException, Exception {
+		Query query = em.createNamedQuery("getUserById");
+		query.setParameter(1, id);
+		DetailAccount result = (DetailAccount) query.getSingleResult();
+		if (eager) {
+			result.getCoupons().size();
+		}
+		return result;
+
+	}
 
 	public List<Coupon> getCouponListByUserName(String name)
 			throws NoResultException, Exception {

@@ -49,4 +49,9 @@ public class DetailedAccountTest {
 		// newMember.getId());
 	}
 
+	public void testGetUserByName() {
+		//DetailAccount da = detailAccountResource.getUserByName("user-3", false);
+	
+	}
+
 }
