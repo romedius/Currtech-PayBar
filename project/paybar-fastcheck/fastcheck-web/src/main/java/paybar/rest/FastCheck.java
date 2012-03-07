@@ -78,6 +78,8 @@ public class FastCheck {
 	@Inject
 	private Logger log;
 
+	private static InitialContext INITIAL_CONTEXT = null;
+
 	// @Resource(lookup = "java:jboss/infinispan/fastcheck")
 	// CacheContainer cacheContainer;
 
@@ -129,7 +131,7 @@ public class FastCheck {
 
 			// fetch the account for the request
 			try {
-				ic = new InitialContext();
+				ic = getInitialContextOfApp();
 				CacheContainer cacheContainer = (CacheContainer) ic
 						.lookup(FASTCHECK_JNDI_NAME);
 
@@ -225,7 +227,6 @@ public class FastCheck {
 						// Message sent. Create update in cache.
 						fastAccount.setCredit(newCredit);
 						fastAccount.removeCoupon(tanCode);
-						fastAccount.increaseVersion();
 
 						// immediately release the lock
 						accountTransactionManager.commit();
@@ -306,13 +307,19 @@ public class FastCheck {
 		return result;
 	}
 
+	private InitialContext getInitialContextOfApp() throws NamingException {
+		if(INITIAL_CONTEXT == null)
+			INITIAL_CONTEXT  = new InitialContext(); 
+		return INITIAL_CONTEXT;
+	}
+
 	/**
 	 * This method allows putting money on to a user's account.
 	 * 
 	 * @param posId This time it is the source financial institute
 	 * @param tanCode Used for storing credit card details
 	 * @param amount amount to be charged on to the users account
-	 * @param username the username of the account to be charged
+	 * @param id the username of the account to be charged
 	 * @return
 	 * @throws NamingException
 	 */
@@ -320,7 +327,7 @@ public class FastCheck {
 	@Path("/charge/{username}/{creditCardNumber}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public String charge(@PathParam("username") Long username,
+	public String charge(@PathParam("username") Long id,
 			@PathParam("creditCardNumber") String creditCardNumber,
 			TransactionRequest transactionRequest) {
 		String result = null;
@@ -328,13 +335,13 @@ public class FastCheck {
 
 		// method needs @Form parameter with @POST
 		if (transactionRequest != null) {
-			String posId = transactionRequest.getPosOrBankId();
+			String bankId = transactionRequest.getPosOrBankId();
 			long amount = transactionRequest.getAmount();
 
 			if (success) {
 				TransactionMessage transactionMessage = new TransactionMessage(
-						TransactionMessage.TYPE_CHARGE, posId, amount,
-						System.currentTimeMillis(), username.toString(), creditCardNumber);
+						TransactionMessage.TYPE_CHARGE, bankId, amount,
+						System.currentTimeMillis(), id.toString(), creditCardNumber);
 				// transmit to JMS
 
 				// obtain context
@@ -346,7 +353,7 @@ public class FastCheck {
 				try {
 					try {
 						// Step 1. Lookup the initial context
-						ic = new InitialContext();
+						ic = getInitialContextOfApp();
 
 						// JMS operations
 
@@ -425,7 +432,7 @@ public class FastCheck {
 		InitialContext ic = null;
 
 		try {
-			ic = new InitialContext();
+			ic = getInitialContextOfApp();
 			CacheContainer cacheContainer = (CacheContainer) ic
 					.lookup(FASTCHECK_JNDI_NAME);
 			couponCache = cacheContainer.getCache("coupons");

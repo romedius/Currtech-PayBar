@@ -49,7 +49,7 @@ public class DelayedTransactionProcessor implements MessageListener {
 			String text = "DelayedTransactionProcessor got Message: "
 					+ "type: " + transactionMessage.getType()
 					+ " posOrBankId: " + transactionMessage.getPosOrBankId()
-					+ ", tanCode: " + transactionMessage.getTanCode()
+					+ ", tanCode: " + transactionMessage.getCouponCode()
 					+ ", amount: " + transactionMessage.getAmount()
 					+ ", timestamp: " + transactionMessage.getTimestamp();
 
@@ -59,11 +59,17 @@ public class DelayedTransactionProcessor implements MessageListener {
 
 			switch (type) {
 			case TransactionMessage.TYPE_TRANSACTION: {
-				if (cr.isValidCoupon(transactionMessage.getTanCode())) {
+				if (cr.isValidCoupon(transactionMessage.getCouponCode())) {
 					tr.createDebitTransaction(transactionMessage.getAmount(),
-							transactionMessage.getTanCode(), text,
+							transactionMessage.getCouponCode(), text,
 							transactionMessage.getPosOrBankId(), new Date(
 									transactionMessage.getTimestamp()));
+					
+					DetailAccount da = dar.getUserByID(Long.valueOf(transactionMessage.getUserName()).longValue(), false);
+					da.setCredit(da.getCredit() - transactionMessage.getAmount());
+					
+					// TODO: save object in datastore
+					
 				}
 				break;
 			}
@@ -82,15 +88,16 @@ public class DelayedTransactionProcessor implements MessageListener {
 				// number?
 				tr.createChargeTransaction(amount,
 						"Charging Account from Credit Card: "
-								+ transactionMessage.getTanCode(),
-						Configuration.BankPosName.toString(), userName, now);
+								+ transactionMessage.getCouponCode(),
+						transactionMessage.getPosOrBankId(), userName, now);
 				da.setCredit(da.getCredit());
 
 				break;
 			}
 			// TODO: throw exception
 			default:
-				log.info("ERROR handling TransactionMessage. Unsupport type.");
+				log.info("ERROR handling TransactionMessage. Unsupported type.");
+				break;
 			}
 
 		} catch (Throwable e) {
