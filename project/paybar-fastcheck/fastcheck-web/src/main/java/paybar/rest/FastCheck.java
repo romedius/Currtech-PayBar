@@ -72,9 +72,7 @@ import at.ac.uibk.paybar.model.TransferAccount;
 public class FastCheck {
 
 	private static final int BATCH_SIZE = 10000;
-	public static final String VALID_POS_ID = "1060";
-	public static final String VALID_TAN_CODE = "21";
-	public static final long CREDIT = 100000;
+
 	public static final String FASTCHECK_JNDI_NAME = "java:jboss/infinispan/container/fastcheck";
 
 	@Inject
@@ -83,6 +81,24 @@ public class FastCheck {
 	// @Resource(lookup = "java:jboss/infinispan/fastcheck")
 	// CacheContainer cacheContainer;
 
+	
+	@POST
+	@Path("/account/new")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public String newAccount(TransferAccount transferAccount) {
+		return null;
+	}
+	
+	@POST
+	@Path("/coupons/new")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public String newCoupons(TransferAccount transferAccount) {
+		return null;
+	}
+	
+	
 	/**
 	 * This method provides the central transaction authorization method.
 	 * 
@@ -352,7 +368,6 @@ public class FastCheck {
 						// Step 5. Create a Text Message
 						ObjectMessage message = session
 								.createObjectMessage(transactionMessage);
-						// TextMessage message = session.createTextMessage("");
 
 						// Step 6. Send The Text Message
 						messageProducer.send(message);
