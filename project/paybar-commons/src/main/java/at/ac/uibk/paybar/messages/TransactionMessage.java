@@ -41,7 +41,7 @@ public class TransactionMessage implements Serializable {
 	 * The tancode is the coupon's security code used as a security token for
 	 * the transaction of removing money from the account.
 	 */
-	private String tanCode;
+	private String couponCode;
 
 	/**
 	 * The timestamp holds the point of time the transaction when it has been
@@ -68,7 +68,7 @@ public class TransactionMessage implements Serializable {
 	public TransactionMessage(int type, String posOrBankId, long amount,
 			long timestamp, String userName, String tanCode) {
 		this.type = type;
-		this.tanCode = tanCode;
+		this.couponCode = tanCode;
 		this.posOrBankId = posOrBankId;
 		this.amount = amount;
 		this.timestamp = timestamp;
@@ -83,8 +83,8 @@ public class TransactionMessage implements Serializable {
 		return posOrBankId;
 	}
 
-	public String getTanCode() {
-		return tanCode;
+	public String getCouponCode() {
+		return couponCode;
 	}
 
 	public long getTimestamp() {
@@ -107,8 +107,8 @@ public class TransactionMessage implements Serializable {
 		this.posOrBankId = posOrBankId;
 	}
 
-	public void setTanCode(String tanCode) {
-		this.tanCode = tanCode;
+	public void setCouponCode(String couponCode) {
+		this.couponCode = couponCode;
 	}
 
 	public void setTimestamp(long timestamp) {
