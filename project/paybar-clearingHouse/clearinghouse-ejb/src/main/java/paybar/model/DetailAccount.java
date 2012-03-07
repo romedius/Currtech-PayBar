@@ -1,6 +1,7 @@
 package paybar.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.ElementCollection;
@@ -19,6 +20,9 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
+
+import at.ac.uibk.paybar.model.FastCoupon;
+import at.ac.uibk.paybar.model.TransferAccount;
 
 @Entity
 @Table(
@@ -205,6 +209,19 @@ public class DetailAccount implements Serializable {
 
 	public void setSecurityKey(String securityKey) {
 		this.securityKey = securityKey;
+	}
+	
+	public TransferAccount getTransferAccount(){
+		TransferAccount trac = new TransferAccount();
+		trac.setId(this.getId());
+		trac.setCredit(this.getCredit());
+		ArrayList<FastCoupon> coupons = new ArrayList<FastCoupon>();
+		for (Coupon c : this.getCoupons()) {
+			coupons.add(c.getFastCoupon());
+		}
+		trac.setCoupons(coupons);
+		return trac;
+		
 	}
 
 }

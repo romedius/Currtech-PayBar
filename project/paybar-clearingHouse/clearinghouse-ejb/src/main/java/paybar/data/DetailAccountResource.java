@@ -171,15 +171,7 @@ public class DetailAccountResource {
 
 		ArrayList<TransferAccount> result = new ArrayList<TransferAccount>();
 		for (DetailAccount detailAccount : tmp) {
-			TransferAccount trac = new TransferAccount();
-			trac.setId(detailAccount.getId());
-			trac.setCredit(detailAccount.getCredit());
-			ArrayList<FastCoupon> coupons = new ArrayList<FastCoupon>();
-			for (Coupon c : detailAccount.getCoupons()) {
-				coupons.add(c.getFastCoupon());
-			}
-			trac.setCoupons(coupons);
-			result.add(trac);
+			result.add(detailAccount.getTransferAccount());
 		}
 		return result;
 	}

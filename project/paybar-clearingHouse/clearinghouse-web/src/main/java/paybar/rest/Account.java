@@ -17,9 +17,18 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+
+import at.ac.uibk.paybar.messages.Configuration;
+import at.ac.uibk.paybar.messages.TransactionRequest;
+import at.ac.uibk.paybar.model.FastCoupon;
+import at.ac.uibk.paybar.model.TransferAccount;
+
 import paybar.data.DetailAccountResource;
 import paybar.data.ModelToWebserviceTransformer;
 import paybar.data.TransactionResource;
+import paybar.model.Coupon;
 import paybar.model.DetailAccount;
 import paybar.model.Transaction;
 import paybar.wsmodel.WsTransaction;
@@ -54,12 +63,22 @@ public class Account {
 		log.info("create ACOUNT");
 		try {
 			dar.createNewDetailAccount(da);
-			ReturnMessage rm = new ReturnMessage(ReturnMessageEnum.SUCCESS,
-				ReturnMessageEnum.SUCCESS.toString());
+
+			ClientRequest clientRequest = new ClientRequest(
+					"http://localhost:8080/fastcheck/rest/transactions/account/new");
+			clientRequest.accept("application/json");
+			da = dar.getUserByName(da.getUserName(), false);
+			clientRequest.body("application/json", da.getTransferAccount());
+
+			ClientResponse<String> fastcheckResponse = clientRequest
+					.post(String.class);
+			ReturnMessageEnum ret = (fastcheckResponse.getStatus() == 200 ? ReturnMessageEnum.SUCCESS
+					: ReturnMessageEnum.FAILURE);
+			ReturnMessage rm = new ReturnMessage(ret, ret.toString());
 			return rm;
 		} catch (Exception e) {
 			ReturnMessage rm = new ReturnMessage(ReturnMessageEnum.FAILURE,
-				ReturnMessageEnum.FAILURE.toString());
+					ReturnMessageEnum.FAILURE.toString());
 			return rm;
 		}
 	}
